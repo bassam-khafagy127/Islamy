@@ -14,4 +14,9 @@ object Constants {
         val ARABIC_LANGUAGE = "ar"
         val ENGLISH_LANGUAGE = "en"
     }
+
+    object PrayerTimes{
+        //"http://api.aladhan.com/v1/timings/1-6-2023?latitude=30.923512&longitude=31.622066&method=2"
+       // const val BaseUrl="http://api.aladhan.com/v1/timings/1-6-2023?latitude=30.923512&longitude=31.622066&method=2"
+    }
 }

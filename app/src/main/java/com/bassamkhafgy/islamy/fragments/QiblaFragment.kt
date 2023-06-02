@@ -18,13 +18,17 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.bassamkhafgy.islamy.R
 import com.bassamkhafgy.islamy.databinding.FragmentQiblaBinding
+import com.bassamkhafgy.islamy.utill.Constants.Location.KAABA_LAT
+import com.bassamkhafgy.islamy.utill.Constants.Location.KAABA_LONG
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class QiblaFragment : Fragment(R.layout.fragment_qibla), SensorEventListener {
+
     private lateinit var binding: FragmentQiblaBinding
     private val qiblaArgs: QiblaFragmentArgs by navArgs()
+
     private lateinit var sensorManager: SensorManager
     private lateinit var sensor: Sensor
     private var currentDegreeNeedle = 0f
@@ -40,6 +44,7 @@ class QiblaFragment : Fragment(R.layout.fragment_qibla), SensorEventListener {
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION)
 
         userLoc = Location(LocationManager.GPS_PROVIDER)
+
         userLoc.longitude = qiblaArgs.locationLongArgs.toDouble()
         userLoc.latitude = qiblaArgs.locationLateArgs.toDouble()
         userLoc.altitude = qiblaArgs.locationAltituedArgs.toDouble()
@@ -84,8 +89,8 @@ class QiblaFragment : Fragment(R.layout.fragment_qibla), SensorEventListener {
         var bearTo: Float
 
         val destinationLoc = Location(LocationManager.GPS_PROVIDER)
-        destinationLoc.latitude = 21.422487 // Kaaba latitude setting
-        destinationLoc.longitude = 39.826206 // Kaaba longitude setting
+        destinationLoc.latitude = KAABA_LAT// Kaaba latitude setting
+        destinationLoc.longitude = KAABA_LONG// Kaaba longitude setting
         bearTo = userLoc.bearingTo(destinationLoc)
 
         val geoField = GeomagneticField(

@@ -29,12 +29,16 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.arabicBtn.setOnClickListener {
+            //   SetLang ARABIC
             changeLanguage(requireContext(), Constants.Language.ARABIC_LANGUAGE)
+
             val action = SplashFragmentDirections.actionSplashFragmentToHomeFragment()
             Navigation.findNavController(view).navigate(action)
         }
         binding.englishBtn.setOnClickListener {
+            //   SetLang English
             changeLanguage(requireContext(), Constants.Language.ENGLISH_LANGUAGE)
+
             val action = SplashFragmentDirections.actionSplashFragmentToHomeFragment()
             Navigation.findNavController(view).navigate(action)
         }

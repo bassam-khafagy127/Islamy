@@ -12,3 +12,9 @@ fun getSystemDate(): String {
         currentDate
     )
 }
+fun convertTo12HourFormat(time24: String): String {
+    val inputFormat = SimpleDateFormat("HH:mm")
+    val outputFormat = SimpleDateFormat("hh:mm a")
+    val time = inputFormat.parse(time24)
+    return outputFormat.format(time)
+}

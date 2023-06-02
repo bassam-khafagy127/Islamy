@@ -11,8 +11,11 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.bassamkhafgy.islamy.R
+import com.bassamkhafgy.islamy.data.local.TimeShow
+import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
 import com.bassamkhafgy.islamy.viewmodel.HomeViewModel
@@ -21,6 +24,12 @@ import com.bassamkhafgy.islamy.utill.Constants.Location.LOCATION_TAG
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.text.SimpleDateFormat
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -35,6 +44,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private var longitude: Double = 0.0
     private var altitued: Double = 0.0
 
+    var fagr = ""
+    var sunrise = ""
+    var duhr = ""
+    var asr = ""
+    var magribe = ""
+    var isha = ""
+
     private var address = ""
     private var date = ""
 
@@ -43,28 +59,56 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        //getLocation
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
+        //layout Inflation and preparation
         binding = FragmentHomeBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        //  getLocationLongitude()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         getLocationLongitude()
         viewModel.getDate()
-//
-        //
-        viewModel.dataLiveData.observe(viewLifecycleOwner) { newData ->
-            date = newData
+        viewModel.getTimings()
+        lifecycleScope.launch {
+            viewModel.dataLiveData.collect { newDate ->
+                date = newDate
+            }
         }
-        //
-        viewModel.addressLiveData.observe(viewLifecycleOwner) { newAddress ->
-            address = newAddress
+
+        lifecycleScope.launch {
+            viewModel.addressLiveData.collect { newAddress ->
+                address = newAddress
+            }
         }
+
+        lifecycleScope.launch {
+            viewModel.fagrLiveData.collect { newValue ->
+                fagr = newValue
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.sunriseLiveData.collect { newValue -> sunrise = newValue }
+        }
+
+        lifecycleScope.launch {
+            viewModel.duhrLiveData.collect { newValue -> duhr = newValue }
+        }
+        lifecycleScope.launch {
+            viewModel.asrLiveData.collect { newValue -> sunrise = newValue }
+        }
+        lifecycleScope.launch {
+            viewModel.magribeLiveData.collect { newValue -> magribe = newValue }
+        }
+        lifecycleScope.launch {
+            viewModel.ishaLiveData.collect { newValue -> magribe = newValue }
+        }
+        setTimes()
         addCallbacks(view)
     }
 
@@ -77,17 +121,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 latitude = it.latitude
                 longitude = it.longitude
                 altitued = it.altitude
-//                Toast.makeText(requireContext(),"\"lat:${latitude},Longt:${longitude}\"",Toast.LENGTH_LONG).show()
+                //getGeocoder
                 viewModel.getAddress(it.latitude, it.longitude)
             }
         }.addOnFailureListener {
             Log.d(LOCATION_TAG, "${it.message}")
+            Toast.makeText(requireContext(), "Error : ${it.message}", Toast.LENGTH_LONG).show()
         }
     }
 
 
     private fun addCallbacks(view: View) {
         binding.apply {
+
             qiblaBtn.setOnClickListener {
                 val action = HomeFragmentDirections.actionHomeFragmentToQiblaFragment(
                     address,
@@ -98,9 +144,24 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 )
                 Navigation.findNavController(view).navigate(action)
             }
+
             settingBtn.setOnClickListener {
                 Toast.makeText(requireContext(), "$latitude", Toast.LENGTH_LONG).show()
             }
+
+        }
+
+    }
+
+    private fun setTimes() {
+        binding.apply {
+            fagrTextView.text = fagr
+            shroukTextView.text = sunrise
+            zohrCardTextView.text = duhr
+            asrCardTextView.text = asr
+            magrebTextView.text = magribe
+            ishaTextView.text = isha
+
         }
     }
 
@@ -120,6 +181,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             )
         }
     }
+
 
 }
 

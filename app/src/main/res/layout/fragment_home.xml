@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="kotlinx.coroutines.flow.Flow" />
         <variable
             name="viewModel"
             type="com.bassamkhafgy.islamy.viewmodel.HomeViewModel" />
@@ -145,7 +145,6 @@
 
                 <TextView
                     android:id="@+id/nextPrayerTimeTV"
-
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
@@ -204,7 +203,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="3:20"
+                            android:text="@{viewModel.fagrLiveData}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -247,7 +246,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="6:30"
+                            android:text="@{viewModel.sunriseLiveData}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -274,7 +273,6 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/zohrCardTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -286,11 +284,12 @@
                             app:drawableStartCompat="@drawable/zohr" />
 
                         <TextView
+                            android:id="@+id/zohrCardTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="1:10"
+                            android:text="@{viewModel.duhrLiveData}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -317,7 +316,6 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/asrCardTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -329,11 +327,12 @@
                             app:drawableStartCompat="@drawable/zohr" />
 
                         <TextView
+                            android:id="@+id/asrCardTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="3:40"
+                            android:text="@{viewModel.asrLiveData}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -374,10 +373,9 @@
                             android:id="@+id/magrebTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:layout_marginStart="6dp"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="6:25"
+                            android:text="@{viewModel.magribeLiveData}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -418,10 +416,9 @@
                             android:id="@+id/ishaTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:layout_marginStart="6dp"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="8:56"
+                            android:text="@{viewModel.ishaLiveData}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />

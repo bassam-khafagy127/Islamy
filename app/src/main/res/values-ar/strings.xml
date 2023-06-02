@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">إسلامي</string>
+    <string name="start">إبدء</string>
+    <string name="arabic">عربي</string>
+    <string name="english">إنجليزي</string>
+    <string name="nextPrayerTV">الصلاة\nالقادمة</string>
+    <string name="isha_time">العشاء</string>
+    <string name="_1_20_nminutes">1.20\nدقيقة</string>
+    <string name="dummyAddress">السمارة تمي الامديد</string>
+    <string name="dummyDate">23 ديسمبر</string>
+    <string name="fagrTime">الفجر</string>
+    <string name="shroukTime">الشروق </string>
+    <string name="zohrTime">الظهر</string>
+    <string name="asrTime">العصر</string>
+    <string name="magrbeTime">المغرب</string>
+    <string name="ishaTime">العشاء</string>
+    <string name="qibla_direction">إتجاه القبلة</string>
+    <string name="latlongDummy">خط الطول:12.21212\خط العرض:12.554544</string>
+    <string name="change_city">تغيير المدينة!!</string>
+</resources>

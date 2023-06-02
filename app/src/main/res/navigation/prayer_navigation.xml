@@ -12,7 +12,9 @@
         tools:layout="@layout/fragment_splash">
         <action
             android:id="@+id/action_splashFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            app:destination="@id/homeFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
@@ -22,10 +24,13 @@
 
         <action
             android:id="@+id/action_homeFragment_to_qiblaFragment"
-            app:destination="@id/qiblaFragment" />
+            app:destination="@id/qiblaFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:popEnterAnim="@android:anim/slide_in_left" />
         <action
             android:id="@+id/action_homeFragment_to_searchFragment"
-            app:destination="@id/searchFragment" />
+            app:destination="@id/searchFragment"
+            app:enterAnim="@android:anim/slide_in_left" />
 
     </fragment>
 
@@ -60,6 +65,10 @@
         <argument
             android:name="date_args"
             app:argType="string" />
+        <action
+            android:id="@+id/action_qiblaFragment_to_searchFragment"
+            app:destination="@id/searchFragment"
+            app:enterAnim="@android:anim/slide_in_left" />
     </fragment>
 
 </navigation>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/blury_background">
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/leftLogoGuideLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".15" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/rightLogoGuideLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".85" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideLineLogoTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".30" />
+
+        <ImageView
+            android:id="@+id/logo_img"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/mosqlogo_svg"
+            app:layout_constraintEnd_toStartOf="@id/rightLogoGuideLine"
+            app:layout_constraintStart_toEndOf="@id/leftLogoGuideLine"
+            app:layout_constraintTop_toBottomOf="@id/guideLineLogoTop" />
+
+        <TextView
+            android:id="@+id/tv_Quality"
+            style="@style/h4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_thin"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textAlignment="center"
+            android:textColor="@color/g_blue"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@id/logo_img"
+            app:layout_constraintHorizontal_bias="0.494"
+            app:layout_constraintStart_toStartOf="@id/logo_img"
+            app:layout_constraintTop_toBottomOf="@id/logo_img" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/arabic_Btn"
+            style="@style/blueButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/arabic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/rightLogoGuideLine"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/leftLogoGuideLine"
+            app:layout_constraintTop_toBottomOf="@id/tv_Quality"
+            app:layout_constraintVertical_bias="0.416" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/english_Btn"
+            style="@style/blueButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/english"
+            app:layout_constraintEnd_toEndOf="@id/rightLogoGuideLine"
+            app:layout_constraintStart_toStartOf="@id/leftLogoGuideLine"
+            app:layout_constraintTop_toBottomOf="@id/arabic_Btn"
+           />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

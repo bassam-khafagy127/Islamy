@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/leftQiblaGuideLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".04" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/rightQiblaGuideLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".96" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topQiblaTextGuideLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.06" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomQiblaImgGuideLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".20" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomQiblaCompassGuideLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".75" />
+
+        <TextView
+            android:id="@+id/qiblaDateTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:drawablePadding="5dp"
+            android:elevation="10dp"
+            android:gravity="center_vertical"
+            android:text="@string/dummyDate"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:drawableStartCompat="@drawable/round_calendar_month_24"
+            app:layout_constraintEnd_toStartOf="@id/rightQiblaGuideLine"
+            app:layout_constraintHorizontal_bias="0.02"
+            app:layout_constraintStart_toEndOf="@id/leftQiblaGuideLine"
+            app:layout_constraintTop_toBottomOf="@id/topQiblaTextGuideLine" />
+
+        <TextView
+            android:id="@+id/qiblaAddressTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="10dp"
+            android:gravity="center_vertical"
+            android:maxLength="40"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:drawableStartCompat="@drawable/location_on_24"
+            app:drawableTint="@color/out_compass"
+            app:layout_constraintBottom_toTopOf="@+id/bottomQiblaImgGuideLine"
+            app:layout_constraintEnd_toStartOf="@id/rightQiblaGuideLine"
+            app:layout_constraintHorizontal_bias="0.02"
+            app:layout_constraintStart_toEndOf="@id/leftQiblaGuideLine"
+            app:layout_constraintTop_toBottomOf="@id/qiblaDateTv"
+            tools:text="@string/dummyAddress" />
+
+
+        <ImageView
+            android:id="@+id/qiblaCompass"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/qibla_direction"
+            android:elevation="15dp"
+            android:padding="22dp"
+            android:src="@drawable/compas_img"
+            app:layout_constraintBottom_toTopOf="@+id/bottomQiblaCompassGuideLine"
+            app:layout_constraintEnd_toStartOf="@id/rightQiblaGuideLine"
+            app:layout_constraintStart_toEndOf="@id/leftQiblaGuideLine"
+            app:layout_constraintTop_toBottomOf="@id/bottomQiblaImgGuideLine" />
+
+        <TextView
+            android:id="@+id/qiblaLocationTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="10dp"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/latlongDummy"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/changeCity_Btn"
+            app:layout_constraintEnd_toEndOf="@id/qiblaCompass"
+            app:layout_constraintStart_toStartOf="@id/qiblaCompass"
+            app:layout_constraintTop_toBottomOf="@id/qiblaCompass" />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/changeCity_Btn"
+            style="@style/blueButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/inner_compass"
+            android:drawableStart="@drawable/location_on_24"
+            android:drawablePadding="6dp"
+            android:drawableTint="@color/white"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="@string/change_city"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/rightQiblaGuideLine"
+            app:layout_constraintStart_toEndOf="@id/leftQiblaGuideLine"
+            app:layout_constraintTop_toBottomOf="@+id/qiblaCompass"
+            app:layout_constraintWidth_percent="0.50" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

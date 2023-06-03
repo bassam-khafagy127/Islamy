@@ -3,6 +3,7 @@ package com.bassamkhafgy.islamy.fragments
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -77,7 +78,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 altitued = it.latitude
             }
         }
-        viewModel.getRemainingTimeToNextPrayer("1:9", "4:4")
+
+        viewModel.getRemainingTimeToNextPrayer("1:09", "4:4")
 
         viewModel.getDate()
         if (isInternetConnected(requireContext())) {
@@ -139,7 +141,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
             lifecycleScope.launch {
                 viewModel.remoteIshaLiveData.collect { newValue -> magribe = newValue }
+
             }
+            Log.e("REMAiningTime: currentHour", currentHour)
+
+            viewModel.getRemainingTimeToNextPrayer("1:6", "4:4")
 
         } else {
             Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_LONG).show()
@@ -149,8 +155,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             viewModel.currentHourLiveData.collect {
                 currentHour = it
             }
-
         }
+
         setTimes()
         addCallbacks(view)
     }

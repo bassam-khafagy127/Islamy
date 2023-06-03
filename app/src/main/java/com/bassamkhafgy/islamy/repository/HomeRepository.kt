@@ -5,17 +5,18 @@ import android.content.Context
 import android.location.Location
 import android.util.Log
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
-import com.bassamkhafgy.islamy.networking.API
+import com.bassamkhafgy.islamy.networking.TimeApiService
 import com.bassamkhafgy.islamy.utill.Constants
 import com.bassamkhafgy.islamy.utill.getAddressGeocoder
 import com.bassamkhafgy.islamy.utill.getSystemDate
 import com.google.android.gms.location.FusedLocationProviderClient
-import retrofit2.Call
+import retrofit2.Response
 import javax.inject.Inject
 
 class HomeRepository @Inject constructor(
     private val context: Context,
     private var fusedLocationProviderClient: FusedLocationProviderClient,
+    private val timeApiService: TimeApiService,
 ) {
 
     init {
@@ -24,8 +25,12 @@ class HomeRepository @Inject constructor(
 
     private val _location: Location = Location("")
 
-    fun getTimings(day: String, latitude: String, longitude: String): Call<TimeResponse> {
-        return API.apiService.getPrayerTimes(day, latitude, longitude)
+    suspend fun getTimings(
+        day: String,
+        latitude: String,
+        longitude: String
+    ): Response<TimeResponse> {
+        return timeApiService.getPrayerTimes(day, latitude, longitude)
     }
 
     fun getAddress(latitude: Double, longitude: Double): String? {

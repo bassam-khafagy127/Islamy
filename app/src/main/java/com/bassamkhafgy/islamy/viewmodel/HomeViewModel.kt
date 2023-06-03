@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
+import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.repository.HomeRepository
 import com.bassamkhafgy.islamy.utill.convertTo12HourFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -66,37 +67,30 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         }
     }
 
-    //getTimes Using CallBack
     fun getTimings(day: String, latitude: String, longitude: String) {
-        repository.getTimings(day, latitude, longitude)
-            .enqueue(object : Callback<TimeResponse> {
-                override fun onResponse(
-                    call: Call<TimeResponse>,
-                    response: Response<TimeResponse>
-                ) {
+        viewModelScope.launch {
 
-                    fagr = convertTo12HourFormat("${response.body()?.data?.timings?.fajr}")
-                    sunrise = convertTo12HourFormat("${response.body()?.data?.timings?.sunrise}")
-                    duhr = convertTo12HourFormat("${response.body()?.data?.timings?.dhuhr}")
-                    asr = convertTo12HourFormat("${response.body()?.data?.timings?.asr}")
-                    magribe = convertTo12HourFormat("${response.body()?.data?.timings?.maghrib}")
-                    isha = convertTo12HourFormat("${response.body()?.data?.timings?.isha}")
+            val timings: Response<TimeResponse> = repository.getTimings(day, latitude, longitude)
+            if (timings.isSuccessful) {
 
-                    viewModelScope.launch {
-                        _remoteFagrLiveData.emit(fagr)
-                        _remoteSunriseLiveData.emit(sunrise)
-                        _remoteDuhrLiveData.emit(duhr)
-                        _remoteAsrLiveData.emit(asr)
-                        _remoteMagribeLiveData.emit(magribe)
-                        _remoteIshaLiveData.emit(isha)
-                    }
-                }
+                fagr = convertTo12HourFormat("${timings.body()?.data?.timings?.fajr}")
+                sunrise = convertTo12HourFormat("${timings.body()?.data?.timings?.sunrise}")
+                duhr = convertTo12HourFormat("${timings.body()?.data?.timings?.dhuhr}")
+                asr = convertTo12HourFormat("${timings.body()?.data?.timings?.asr}")
+                magribe = convertTo12HourFormat("${timings.body()?.data?.timings?.maghrib}")
+                isha = convertTo12HourFormat("${timings.body()?.data?.timings?.isha}")
 
-                override fun onFailure(call: Call<TimeResponse>, t: Throwable) {
-                    //getLocal
-                    Log.e("ERRe", t.message.toString())
-                }
-            })
+                //Emit PrayerTimes
+                _remoteFagrLiveData.emit(fagr)
+                _remoteSunriseLiveData.emit(sunrise)
+                _remoteDuhrLiveData.emit(duhr)
+                _remoteAsrLiveData.emit(asr)
+                _remoteMagribeLiveData.emit(magribe)
+                _remoteIshaLiveData.emit(isha)
+
+            }
+
+        }
     }
 
     fun getLocation() {

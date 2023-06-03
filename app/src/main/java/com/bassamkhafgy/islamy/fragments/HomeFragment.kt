@@ -22,6 +22,7 @@ import com.bassamkhafgy.islamy.utill.getSystemDate
 import com.bassamkhafgy.islamy.utill.isInternetConnected
 import com.bassamkhafgy.islamy.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -51,18 +52,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        checkPermission()
 
+        checkPermission()
         //getLocation
         viewModel.getLocation()
 
-        lifecycleScope.launch {
-            viewModel.locationLiveData.collect {
-                latitude = it.latitude
-                longitude = it.longitude
-                altitued = it.latitude
-            }
-        }
 
         //layout Inflation and preparation
         binding = FragmentHomeBinding.inflate(layoutInflater)
@@ -74,22 +68,43 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
         checkPermission()
-        viewModel.getDate()
 
-        if (isInternetConnected(requireContext())) {
-            lifecycleScope.launch {
-                if (latitude == 0.0) {
-                    viewModel.getAddress(CAIRO_LAT, CAIRO_LONG)
-                } else viewModel.getAddress(latitude, longitude)
 
+        lifecycleScope.launch(Dispatchers.Main) {
+            viewModel.locationLiveData.collect {
+                latitude = it.latitude
+                longitude = it.longitude
+                altitued = it.latitude
             }
-            lifecycleScope.launch {
-                viewModel.getTimings(
-                    convertToApiDateFormat(date),
-                    CAIRO_LAT.toString(),
-                    CAIRO_LONG.toString()
-                )
+        }
+        viewModel.getDate()
+        if (isInternetConnected(requireContext())) {
+            //AddressGeocoder
+
+            lifecycleScope.launch(Dispatchers.Main) {
+                if (latitude == 0.0 || longitude == 0.0) {
+                    viewModel.getTimings(
+                        convertToApiDateFormat(date),
+                        CAIRO_LAT.toString(),
+                        CAIRO_LONG.toString()
+                    )
+                } else {
+
+                    viewModel.getTimings(
+                        convertToApiDateFormat(date), latitude.toString(), longitude.toString()
+                    )
+
+                }
+                lifecycleScope.launch {
+                    if (latitude == 0.0 || longitude == 0.0) {
+                        viewModel.getAddress(CAIRO_LAT, CAIRO_LONG)
+                    } else viewModel.getAddress(latitude, longitude)
+
+                }
+
             }
 
             lifecycleScope.launch {
@@ -104,6 +119,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
             }
 
+            //Prayer Times
             lifecycleScope.launch {
                 viewModel.remoteFagrLiveData.collect { newValue ->
                     fagr = newValue
@@ -126,7 +142,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 viewModel.remoteIshaLiveData.collect { newValue -> magribe = newValue }
             }
         } else {
-            Toast.makeText(requireContext(), "NoInterNetConnection", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_LONG).show()
         }
         setTimes()
         addCallbacks(view)

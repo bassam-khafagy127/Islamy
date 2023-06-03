@@ -3,14 +3,12 @@ package com.bassamkhafgy.islamy.utill
 import android.os.CountDownTimer
 import android.text.format.Time
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 private val _remainingTimeLiveData = MutableStateFlow("")
-val remainingTimeLiveData: StateFlow<String> = _remainingTimeLiveData
 
 fun getSystemDate(): String {
     val currentDate = Calendar.getInstance().time
@@ -42,7 +40,7 @@ fun convertToApiDateFormat(inputDate: String): String {
 }
 
 var remainingTime = ""
-fun getPrayerRemainingTime(currentTime: String, prayerTime: String): StateFlow<String> {
+fun getPrayerRemainingTime(currentTime: String, prayerTime: String): MutableStateFlow<String> {
     val currentTimeObj = Time()
     val prayerTimeObj = Time()
     // Set current time
@@ -82,5 +80,5 @@ fun getPrayerRemainingTime(currentTime: String, prayerTime: String): StateFlow<S
     }
 
     countDownTimer.start()
-    return remainingTime
+    return _remainingTimeLiveData
 }

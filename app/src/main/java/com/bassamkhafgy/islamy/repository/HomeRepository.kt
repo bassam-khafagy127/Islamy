@@ -47,8 +47,6 @@ class HomeRepository @Inject constructor(
     }
 
     fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String): StateFlow<String> {
-        //  Log.e("REMAiningTime REpo: ", getPrayerRemainingTime(currentTime, prayerTime))
-
         return getPrayerRemainingTime(currentTime, prayerTime)
     }
 

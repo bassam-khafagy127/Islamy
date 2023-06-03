@@ -3,7 +3,6 @@ package com.bassamkhafgy.islamy.fragments
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -149,21 +148,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         lifecycleScope.launch {
             viewModel.currentHourLiveData.collect {
                 currentHour = it
-
-            }
-
-        }
-        lifecycleScope.launch {
-            viewModel.remainingTimeLiveData.collect {
-                val remainingTime = it
-                Toast.makeText(
-                    requireContext(),
-                    "Current Hour:${currentHour} , RemainingTime :$remainingTime",
-                    Toast.LENGTH_LONG
-                )
-                    .show()
-                Log.e("REMAiningTime: ", remainingTime)
-
             }
 
         }

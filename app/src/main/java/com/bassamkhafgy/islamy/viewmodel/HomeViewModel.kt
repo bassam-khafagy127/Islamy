@@ -1,6 +1,7 @@
 package com.bassamkhafgy.islamy.viewmodel
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
@@ -71,8 +72,11 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
 
     fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String) {
         viewModelScope.launch {
-            _remainingTimeLiveData =
-                repository.getRemainingTimeToNextPrayer(currentTime, prayerTime) as MutableStateFlow<String>
+            repository.getRemainingTimeToNextPrayer(currentTime, prayerTime)
+                .collect { remainingTime ->
+                    _remainingTimeLiveData.emit(remainingTime)
+                    Log.e("REMAiningTime: ", remainingTime)
+                }
         }
     }
 

@@ -8,6 +8,8 @@ import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.networking.TimeApiService
 import com.bassamkhafgy.islamy.utill.Constants
 import com.bassamkhafgy.islamy.utill.getAddressGeocoder
+import com.bassamkhafgy.islamy.utill.getPrayerRemainingTime
+import com.bassamkhafgy.islamy.utill.getSystemCurrentTime
 import com.bassamkhafgy.islamy.utill.getSystemDate
 import com.google.android.gms.location.FusedLocationProviderClient
 import retrofit2.Response
@@ -37,9 +39,18 @@ class HomeRepository @Inject constructor(
         return getAddressGeocoder(context, latitude, longitude)
     }
 
-    fun getDate(): String {
-        return getSystemDate()
+    fun getDate() = getSystemDate()
+
+    fun getCurrentHour(): String {
+        return getSystemCurrentTime()
     }
+
+    fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String): String {
+        Log.e("REMAiningTime REpo: ", getPrayerRemainingTime(currentTime, prayerTime))
+
+        return getPrayerRemainingTime(currentTime, prayerTime)
+    }
+
 
     fun getDefaultLocation(): Location {
         val defaultLocation = Location("")

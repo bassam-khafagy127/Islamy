@@ -3,6 +3,7 @@ package com.bassamkhafgy.islamy.fragments
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,12 +38,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private var longitude: Double = 0.0
     private var altitued: Double = 0.0
 
-    var fagr = ""
-    var sunrise = ""
-    var duhr = ""
-    var asr = ""
-    var magribe = ""
-    var isha = ""
+    private var fagr = ""
+    private var sunrise = ""
+    private var duhr = ""
+    private var asr = ""
+    private var magribe = ""
+    private var isha = ""
+
+    private var currentHour = ""
 
     private var address = ""
     private var date = getSystemDate()
@@ -56,8 +59,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         checkPermission()
         //getLocation
         viewModel.getLocation()
-
-
         //layout Inflation and preparation
         binding = FragmentHomeBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
@@ -68,11 +69,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-
         checkPermission()
-
-
+        viewModel.getCurrentHour()
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.locationLiveData.collect {
                 latitude = it.latitude
@@ -80,6 +78,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 altitued = it.latitude
             }
         }
+        viewModel.getRemainingTimeToNextPrayer("1:9", "4:4")
+
         viewModel.getDate()
         if (isInternetConnected(requireContext())) {
             //AddressGeocoder
@@ -141,8 +141,31 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             lifecycleScope.launch {
                 viewModel.remoteIshaLiveData.collect { newValue -> magribe = newValue }
             }
+
         } else {
             Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_LONG).show()
+        }
+
+        lifecycleScope.launch {
+            viewModel.currentHourLiveData.collect {
+                currentHour = it
+
+            }
+
+        }
+        lifecycleScope.launch {
+            viewModel.remainingTimeLiveData.collect {
+                val remainingTime = it
+                Toast.makeText(
+                    requireContext(),
+                    "Current Hour:${currentHour} , RemainingTime :$remainingTime",
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+                Log.e("REMAiningTime: ", remainingTime)
+
+            }
+
         }
         setTimes()
         addCallbacks(view)

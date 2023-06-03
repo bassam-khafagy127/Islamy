@@ -1,19 +1,15 @@
 package com.bassamkhafgy.islamy.viewmodel
 
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
-import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.repository.HomeRepository
 import com.bassamkhafgy.islamy.utill.convertTo12HourFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -55,8 +51,33 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     private val _remoteIshaLiveData = MutableStateFlow("")
     val remoteIshaLiveData: StateFlow<String> = _remoteIshaLiveData
 
+    private val _currentHourLiveData = MutableStateFlow("")
+    val currentHourLiveData: StateFlow<String> = _currentHourLiveData
+
+    private val _remainingTimeLiveData = MutableStateFlow("")
+    val remainingTimeLiveData: StateFlow<String> = _remainingTimeLiveData
+
     init {
         getLocation()
+    }
+
+    fun getCurrentHour() {
+        viewModelScope.launch {
+            _currentHourLiveData.emit(
+                repository.getCurrentHour()
+            )
+        }
+    }
+
+    fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String) {
+        viewModelScope.launch {
+            _remainingTimeLiveData.emit(
+                repository.getRemainingTimeToNextPrayer(
+                    currentTime,
+                    prayerTime
+                )
+            )
+        }
     }
 
     fun getAddress(latitude: Double, longitude: Double) {

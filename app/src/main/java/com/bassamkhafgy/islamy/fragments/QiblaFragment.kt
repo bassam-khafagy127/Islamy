@@ -1,6 +1,7 @@
 package com.bassamkhafgy.islamy.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.hardware.GeomagneticField
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -8,6 +9,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,12 +17,14 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.bassamkhafgy.islamy.R
 import com.bassamkhafgy.islamy.databinding.FragmentQiblaBinding
 import com.bassamkhafgy.islamy.utill.Constants.Location.KAABA_LAT
 import com.bassamkhafgy.islamy.utill.Constants.Location.KAABA_LONG
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 
 
 @AndroidEntryPoint
@@ -69,8 +73,16 @@ class QiblaFragment : Fragment(R.layout.fragment_qibla), SensorEventListener {
             qiblaLocationTV.text = location
         }
 
-    }
+        binding.showOnMapBtn.setOnClickListener {
+            openMap()
+        }
 
+        binding.searchForNewCityTv.setOnClickListener {
+            val action = QiblaFragmentDirections.actionQiblaFragmentToSearchFragment()
+            Navigation.findNavController(view).navigate(action)
+        }
+
+    }
 
     override fun onResume() {
         super.onResume()
@@ -142,6 +154,22 @@ class QiblaFragment : Fragment(R.layout.fragment_qibla), SensorEventListener {
 //        binding.qiblaCompass.startAnimation(ra)
 //        currentDegree = -degree.toFloat()
 
+    }
+
+    private fun openMap() {
+        val uri = String.format(
+            Locale.ENGLISH,
+            "http://maps.google.com/maps?saddr=%f,%f(%s)&daddr=%f,%f (%s)",
+            userLoc.latitude,
+            userLoc.longitude,
+            "Your Location",
+            KAABA_LAT,
+            KAABA_LONG,
+            "Kaba"
+        )
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+        intent.setPackage("com.google.android.apps.maps")
+        startActivity(intent)
     }
 
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {

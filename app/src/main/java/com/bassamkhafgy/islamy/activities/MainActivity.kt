@@ -1,4 +1,4 @@
-package com.example.islamyapp.activities
+package com.bassamkhafgy.islamy.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

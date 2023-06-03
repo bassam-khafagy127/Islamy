@@ -1,9 +1,12 @@
 package com.bassamkhafgy.islamy.fragments
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.bassamkhafgy.islamy.R
@@ -28,6 +31,7 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        checkPermission()
         binding.arabicBtn.setOnClickListener {
             //   SetLang ARABIC
             changeLanguage(requireContext(), Constants.Language.ARABIC_LANGUAGE)
@@ -41,6 +45,23 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
 
             val action = SplashFragmentDirections.actionSplashFragmentToHomeFragment()
             Navigation.findNavController(view).navigate(action)
+        }
+    }
+
+       private fun checkPermission() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                Constants.Location.LOCATION_PERMESSION_CODE
+            )
         }
     }
 }

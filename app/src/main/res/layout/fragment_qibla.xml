@@ -59,10 +59,28 @@
             android:textSize="20sp"
             android:textStyle="bold"
             app:drawableStartCompat="@drawable/round_calendar_month_24"
+
             app:layout_constraintEnd_toStartOf="@id/rightQiblaGuideLine"
             app:layout_constraintHorizontal_bias="0.02"
             app:layout_constraintStart_toEndOf="@id/leftQiblaGuideLine"
             app:layout_constraintTop_toBottomOf="@id/topQiblaTextGuideLine" />
+
+        <TextView
+            android:id="@+id/searchForNewCityTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:drawablePadding="5dp"
+            android:elevation="10dp"
+            android:gravity="center_vertical"
+            android:text="@string/searchForCity"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:drawableStartCompat="@drawable/search_24"
+            app:layout_constraintEnd_toStartOf="@id/rightQiblaGuideLine"
+            app:layout_constraintHorizontal_bias="0.02"
+            app:layout_constraintTop_toBottomOf="@id/topQiblaTextGuideLine"
+            app:drawableTint="@color/out_compass" />
 
         <TextView
             android:id="@+id/qiblaAddressTv"
@@ -107,16 +125,16 @@
             android:text="@string/latlongDummy"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/changeCity_Btn"
+            app:layout_constraintBottom_toTopOf="@+id/show_on_map_btn"
             app:layout_constraintEnd_toEndOf="@id/qiblaCompass"
             app:layout_constraintStart_toStartOf="@id/qiblaCompass"
             app:layout_constraintTop_toBottomOf="@id/qiblaCompass" />
 
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/changeCity_Btn"
+            android:id="@+id/show_on_map_btn"
             style="@style/blueButtonStyle"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/inner_compass"
             android:drawableStart="@drawable/location_on_24"
@@ -124,7 +142,7 @@
             android:drawableTint="@color/white"
             android:gravity="center"
             android:padding="8dp"
-            android:text="@string/change_city"
+            android:text="@string/show_on_map"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/rightQiblaGuideLine"
             app:layout_constraintStart_toEndOf="@id/leftQiblaGuideLine"

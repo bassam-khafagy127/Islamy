@@ -3,7 +3,6 @@ package com.bassamkhafgy.islamy.fragments
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,29 +13,22 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.bassamkhafgy.islamy.R
-import com.bassamkhafgy.islamy.data.local.TimeShow
-import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
+import com.bassamkhafgy.islamy.utill.Constants.Location.CAIRO_LAT
+import com.bassamkhafgy.islamy.utill.Constants.Location.CAIRO_LONG
+import com.bassamkhafgy.islamy.utill.convertToApiDateFormat
+import com.bassamkhafgy.islamy.utill.getSystemDate
+import com.bassamkhafgy.islamy.utill.isInternetConnected
 import com.bassamkhafgy.islamy.viewmodel.HomeViewModel
-
-import com.bassamkhafgy.islamy.utill.Constants.Location.LOCATION_TAG
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.text.SimpleDateFormat
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private lateinit var binding: FragmentHomeBinding
 
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private val viewModel by viewModels<HomeViewModel>()
 
@@ -52,16 +44,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     var isha = ""
 
     private var address = ""
-    private var date = ""
+    private var date = getSystemDate()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        checkPermission()
+
         //getLocation
-        fusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(requireActivity())
+        viewModel.getLocation()
+
+        lifecycleScope.launch {
+            viewModel.locationLiveData.collect {
+                latitude = it.latitude
+                longitude = it.longitude
+                altitued = it.latitude
+            }
+        }
+
         //layout Inflation and preparation
         binding = FragmentHomeBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
@@ -72,62 +74,62 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        getLocationLongitude()
+        checkPermission()
         viewModel.getDate()
-        viewModel.getTimings()
-        lifecycleScope.launch {
-            viewModel.dataLiveData.collect { newDate ->
-                date = newDate
-            }
-        }
 
-        lifecycleScope.launch {
-            viewModel.addressLiveData.collect { newAddress ->
-                address = newAddress
-            }
-        }
+        if (isInternetConnected(requireContext())) {
+            lifecycleScope.launch {
+                if (latitude == 0.0) {
+                    viewModel.getAddress(CAIRO_LAT, CAIRO_LONG)
+                } else viewModel.getAddress(latitude, longitude)
 
-        lifecycleScope.launch {
-            viewModel.fagrLiveData.collect { newValue ->
-                fagr = newValue
             }
-        }
-        lifecycleScope.launch {
-            viewModel.sunriseLiveData.collect { newValue -> sunrise = newValue }
-        }
+            lifecycleScope.launch {
+                viewModel.getTimings(
+                    convertToApiDateFormat(date),
+                    CAIRO_LAT.toString(),
+                    CAIRO_LONG.toString()
+                )
+            }
 
-        lifecycleScope.launch {
-            viewModel.duhrLiveData.collect { newValue -> duhr = newValue }
-        }
-        lifecycleScope.launch {
-            viewModel.asrLiveData.collect { newValue -> sunrise = newValue }
-        }
-        lifecycleScope.launch {
-            viewModel.magribeLiveData.collect { newValue -> magribe = newValue }
-        }
-        lifecycleScope.launch {
-            viewModel.ishaLiveData.collect { newValue -> magribe = newValue }
+            lifecycleScope.launch {
+                viewModel.dataLiveData.collect { newDate ->
+                    date = newDate
+                }
+            }
+
+            lifecycleScope.launch {
+                viewModel.addressLiveData.collect { newAddress ->
+                    address = newAddress
+                }
+            }
+
+            lifecycleScope.launch {
+                viewModel.remoteFagrLiveData.collect { newValue ->
+                    fagr = newValue
+                }
+            }
+            lifecycleScope.launch {
+                viewModel.remoteSunriseLiveData.collect { newValue -> sunrise = newValue }
+            }
+
+            lifecycleScope.launch {
+                viewModel.remoteDuhrLiveData.collect { newValue -> duhr = newValue }
+            }
+            lifecycleScope.launch {
+                viewModel.remoteAsrLiveData.collect { newValue -> sunrise = newValue }
+            }
+            lifecycleScope.launch {
+                viewModel.remoteMagribeLiveData.collect { newValue -> magribe = newValue }
+            }
+            lifecycleScope.launch {
+                viewModel.remoteIshaLiveData.collect { newValue -> magribe = newValue }
+            }
+        } else {
+            Toast.makeText(requireContext(), "NoInterNetConnection", Toast.LENGTH_LONG).show()
         }
         setTimes()
         addCallbacks(view)
-    }
-
-    private fun getLocationLongitude() {
-        checkPermission()
-        val location = fusedLocationProviderClient.lastLocation
-        location.addOnSuccessListener {
-
-            if (it != null) {
-                latitude = it.latitude
-                longitude = it.longitude
-                altitued = it.altitude
-                //getGeocoder
-                viewModel.getAddress(it.latitude, it.longitude)
-            }
-        }.addOnFailureListener {
-            Log.d(LOCATION_TAG, "${it.message}")
-            Toast.makeText(requireContext(), "Error : ${it.message}", Toast.LENGTH_LONG).show()
-        }
     }
 
 
@@ -135,14 +137,27 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.apply {
 
             qiblaBtn.setOnClickListener {
-                val action = HomeFragmentDirections.actionHomeFragmentToQiblaFragment(
-                    address,
-                    date,
-                    latitude.toFloat(),
-                    longitude.toFloat(),
-                    altitued.toFloat()
-                )
-                Navigation.findNavController(view).navigate(action)
+                val lat = latitude
+                if (lat == 0.0) {
+                    val action = HomeFragmentDirections.actionHomeFragmentToQiblaFragment(
+                        address,
+                        date,
+                        CAIRO_LAT.toFloat(),
+                        CAIRO_LONG.toFloat(),
+                        altitued.toFloat()
+                    )
+                    Navigation.findNavController(view).navigate(action)
+                } else {
+                    val action = HomeFragmentDirections.actionHomeFragmentToQiblaFragment(
+                        address,
+                        date,
+                        latitude.toFloat(),
+                        longitude.toFloat(),
+                        altitued.toFloat()
+                    )
+                    Navigation.findNavController(view).navigate(action)
+                }
+
             }
 
             settingBtn.setOnClickListener {

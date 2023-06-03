@@ -16,5 +16,6 @@
     <string name="ishaTime">Isa </string>
     <string name="qibla_direction">Qibla Direction</string>
     <string name="latlongDummy">lat:12.21212\nLong:12.554544</string>
-    <string name="change_city">Change City!!</string>
+    <string name="searchForCity">Search For City</string>
+    <string name="show_on_map">Show on map!!</string>
 </resources>

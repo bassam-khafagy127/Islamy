@@ -54,7 +54,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     private val _currentHourLiveData = MutableStateFlow("")
     val currentHourLiveData: StateFlow<String> = _currentHourLiveData
 
-    private val _remainingTimeLiveData = MutableStateFlow("")
+    private var _remainingTimeLiveData = MutableStateFlow("")
     val remainingTimeLiveData: StateFlow<String> = _remainingTimeLiveData
 
     init {
@@ -71,12 +71,8 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
 
     fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String) {
         viewModelScope.launch {
-            _remainingTimeLiveData.emit(
-                repository.getRemainingTimeToNextPrayer(
-                    currentTime,
-                    prayerTime
-                )
-            )
+            _remainingTimeLiveData =
+                repository.getRemainingTimeToNextPrayer(currentTime, prayerTime) as MutableStateFlow<String>
         }
     }
 

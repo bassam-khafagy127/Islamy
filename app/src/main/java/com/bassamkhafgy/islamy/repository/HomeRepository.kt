@@ -20,16 +20,12 @@ class HomeRepository @Inject constructor(
 
     init {
         getLocationLongitude()
-
     }
 
     private val _location: Location = Location("")
 
     fun getTimings(day: String, latitude: String, longitude: String): Call<TimeResponse> {
-        val _day = day
-        val _latitude = latitude
-        val _longitude = longitude
-        return API.apiService.getPrayerTimes(_day, _latitude, _longitude)
+        return API.apiService.getPrayerTimes(day, latitude, longitude)
     }
 
     fun getAddress(latitude: Double, longitude: Double): String? {

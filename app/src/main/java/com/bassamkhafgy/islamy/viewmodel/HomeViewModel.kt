@@ -66,8 +66,8 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         }
     }
 
+    //getTimes Using CallBack
     fun getTimings(day: String, latitude: String, longitude: String) {
-
         repository.getTimings(day, latitude, longitude)
             .enqueue(object : Callback<TimeResponse> {
                 override fun onResponse(
@@ -96,7 +96,6 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
                     //getLocal
                     Log.e("ERRe", t.message.toString())
                 }
-
             })
     }
 

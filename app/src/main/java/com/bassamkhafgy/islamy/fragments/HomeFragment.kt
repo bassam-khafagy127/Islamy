@@ -7,14 +7,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.bassamkhafgy.islamy.R
-import com.bassamkhafgy.islamy.data.local.TimeStore
+import com.bassamkhafgy.islamy.data.local.TimeSchem
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
 import com.bassamkhafgy.islamy.utill.Constants.Location.CAIRO_LAT
@@ -106,12 +105,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 viewModel.addressLiveData.collect { newAddress ->
                     address = newAddress
                     if (viewModel.checkAddressesValues() > 0) {
-                        Log.d("DATABASETEST", "BIGER")
-                        viewModel.updateLastAddress(address)
-
+                        launch(Dispatchers.IO) {
+                            Log.d("DATABASETEST", "BIGER")
+                            viewModel.updateLastAddress(newAddress)
+                        }
                     } else {
-                        Log.d("DATABASETEST", "Smailler")
-                        viewModel.insertLastAddress(address)
+                       lifecycleScope.launch {
+                           Log.d("DATABASETEST", "Smailler")
+                           viewModel.insertLastAddress(newAddress)
+                       }
                     }
                 }
             }
@@ -140,7 +142,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
             }
             lifecycleScope.launch(Dispatchers.IO) {
-                val timings = TimeStore(0, fagr, sunrise, duhr, asr, magribe, isha)
+                val timings = TimeSchem(0, fagr, sunrise, duhr, asr, magribe, isha)
                 fagr = timings.fagr
                 sunrise = timings.sunrise
                 duhr = timings.duhr
@@ -182,7 +184,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         binding.settingBtn.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
-                val timings = TimeStore(0, fagr, sunrise, duhr, asr, magribe, isha)
+                val timings = TimeSchem(0, fagr, sunrise, duhr, asr, magribe, isha)
                 if (viewModel.checkPrayingTimeValues() > 0) {
                     Log.d("DATABASETEST", "BIGER")
                     viewModel.updateLocalTimings(timings)

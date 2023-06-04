@@ -2,12 +2,10 @@ package com.bassamkhafgy.islamy.viewmodel
 
 import android.location.Location
 import android.os.CountDownTimer
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bassamkhafgy.islamy.data.local.LastLocation
-import com.bassamkhafgy.islamy.data.local.TimeStore
+import com.bassamkhafgy.islamy.data.local.TimeSchem
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.repository.HomeRepository
 import com.bassamkhafgy.islamy.utill.convertTo12HourFormat
@@ -32,7 +30,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     private var isha = ""
 
 
-    private val _prayingTimesLiveData = Channel<TimeStore>()
+    private val _prayingTimesLiveData = Channel<TimeSchem>()
     val prayingTimesLiveData = _prayingTimesLiveData.receiveAsFlow()
 
     private val _lastAddressLiveData = Channel<LastLocation>()
@@ -149,7 +147,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     }
 
 
-    fun getStoredTimings(): TimeStore {
+    fun getStoredTimings(): TimeSchem {
         fagr = repository.getAllStoredTimings().fagr
         sunrise = repository.getAllStoredTimings().sunrise
         duhr = repository.getAllStoredTimings().duhr
@@ -165,12 +163,12 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
             _remoteMagribeLiveData.emit(magribe)
             _remoteIshaLiveData.emit(isha)
         }
-        return TimeStore(0, fagr, sunrise, duhr, asr, magribe, isha)
+        return TimeSchem(0, fagr, sunrise, duhr, asr, magribe, isha)
 
     }
 
 
-    fun insertLocalTimings(time: TimeStore) {
+    suspend fun insertLocalTimings(time: TimeSchem) {
         repository.insertToLocalPrayingTimes(time)
     }
 
@@ -180,11 +178,11 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         }
     }
 
-    fun updateLastAddress(lastLocation: String) {
+    suspend fun updateLastAddress(lastLocation: String) {
         repository.updateLastAddress(lastLocation)
     }
 
-    fun updateLocalTimings(prayingTime: TimeStore) {
+    suspend fun updateLocalTimings(prayingTime: TimeSchem) {
         repository.updatePrayingTimes(prayingTime)
     }
 
@@ -230,15 +228,10 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     }
 
     fun checkAddressesValues(): Int {
-        var value = 0
-        viewModelScope.launch(Dispatchers.IO) { value = repository.checkAddressesValues() }
-        return value
+        return repository.checkAddressesValues()
     }
 
     fun checkPrayingTimeValues(): Int {
-//        var value = 0
-//        viewModelScope.launch(Dispatchers.IO) { value = repository.checkPrayingTimeValues() }
-//        return value
         return repository.checkPrayingTimeValues()
     }
 }

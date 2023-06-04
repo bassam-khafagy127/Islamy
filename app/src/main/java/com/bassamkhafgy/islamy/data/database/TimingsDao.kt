@@ -4,19 +4,18 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.bassamkhafgy.islamy.data.local.LastLocation
-import com.bassamkhafgy.islamy.data.local.TimeStore
+import com.bassamkhafgy.islamy.data.local.TimeSchem
 
 @Dao
 interface TimingsDao {
     @Insert
-    fun insertTimings(time: TimeStore)
+    suspend fun insertTimings(time: TimeSchem)
 
     @Update
-    fun updateTimings(time: TimeStore)
+   suspend fun updateTimings(time: TimeSchem)
 
     @Query("SELECT*FROM `PRAYER TIMES`")
-    fun getAllTimings(): List<TimeStore>
+    fun getAllTimings(): List<TimeSchem>
 
     @Query("SELECT COUNT(*) FROM `PRAYER TIMES`")
     fun isTableEmpty(): Int

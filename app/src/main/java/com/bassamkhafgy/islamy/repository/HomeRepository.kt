@@ -6,10 +6,9 @@ import android.location.Location
 import android.util.Log
 import com.bassamkhafgy.islamy.data.database.TimingsDataBase
 import com.bassamkhafgy.islamy.data.local.LastLocation
-import com.bassamkhafgy.islamy.data.local.TimeStore
+import com.bassamkhafgy.islamy.data.local.TimeSchem
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.networking.TimeApiService
-import com.bassamkhafgy.islamy.utill.Constants
 import com.bassamkhafgy.islamy.utill.Constants.ERROR_TAG
 import com.bassamkhafgy.islamy.utill.getAddressGeocoder
 import com.bassamkhafgy.islamy.utill.getPrayerRemainingTime
@@ -71,19 +70,19 @@ class HomeRepository @Inject constructor(
         return _location
     }
 
-    fun insertLastAddress(lastLocation: String) {
+    suspend fun insertLastAddress(lastLocation: String) {
         timingsDataBase.locationDao().insertAddress(LastLocation(0, lastLocation))
     }
 
-    fun insertToLocalPrayingTimes(time: TimeStore) {
+    suspend fun insertToLocalPrayingTimes(time: TimeSchem) {
         timingsDataBase.timingsDao().insertTimings(time)
     }
 
-    fun updateLastAddress(lastLocation: String) {
+    suspend fun updateLastAddress(lastLocation: String) {
         timingsDataBase.locationDao().updateAddress(LastLocation(0, lastLocation))
     }
 
-    fun updatePrayingTimes(lastPrayingTime: TimeStore) {
+    suspend fun updatePrayingTimes(lastPrayingTime: TimeSchem) {
         timingsDataBase.timingsDao().updateTimings(lastPrayingTime)
     }
 
@@ -92,7 +91,7 @@ class HomeRepository @Inject constructor(
         return timingsDataBase.locationDao().getLastAddress()[size - 1].location
     }
 
-    fun getAllStoredTimings(): TimeStore {
+    fun getAllStoredTimings(): TimeSchem {
         val size = timingsDataBase.timingsDao().getAllTimings().size
         return timingsDataBase.timingsDao().getAllTimings()[size - 1]
     }

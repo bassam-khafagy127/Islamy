@@ -2,6 +2,8 @@ package com.bassamkhafgy.islamy.viewmodel
 
 import android.location.Location
 import android.os.CountDownTimer
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bassamkhafgy.islamy.data.local.LastLocation
@@ -11,8 +13,10 @@ import com.bassamkhafgy.islamy.repository.HomeRepository
 import com.bassamkhafgy.islamy.utill.convertTo12HourFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import javax.inject.Inject
@@ -28,11 +32,15 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     private var isha = ""
 
 
+    private val _prayingTimesLiveData = Channel<TimeStore>()
+    val prayingTimesLiveData = _prayingTimesLiveData.receiveAsFlow()
+
+    private val _lastAddressLiveData = Channel<LastLocation>()
+    val lastAddressLiveData = _lastAddressLiveData.receiveAsFlow()
+
+
     private val _locationLiveData = MutableStateFlow(repository.getDefaultLocation())
     val locationLiveData: StateFlow<Location> = _locationLiveData
-
-    private val _latLongLiveData = MutableStateFlow(LastLocation(0, "", ""))
-    val latLongLiveData: StateFlow<LastLocation> = _latLongLiveData
 
     private val _dateLiveData = MutableStateFlow("")
     val dataLiveData: StateFlow<String> = _dateLiveData
@@ -109,13 +117,15 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
                 _remoteMagribeLiveData.emit(magribe)
                 _remoteIshaLiveData.emit(isha)
             } else {
-                fagr = repository.getStoredTimings().fagr
-                sunrise = repository.getStoredTimings().sunrise
-                duhr = repository.getStoredTimings().duhr
-                asr = repository.getStoredTimings().asr
-                magribe = repository.getStoredTimings().magribe
-                fagr = repository.getStoredTimings().isha
 
+                viewModelScope.launch(Dispatchers.IO) {
+                    fagr = repository.getAllStoredTimings().fagr
+                    sunrise = repository.getAllStoredTimings().sunrise
+                    duhr = repository.getAllStoredTimings().duhr
+                    asr = repository.getAllStoredTimings().asr
+                    magribe = repository.getAllStoredTimings().magribe
+                    fagr = repository.getAllStoredTimings().isha
+                }
                 //Emit PrayerTimes
                 _remoteFagrLiveData.emit(fagr)
                 _remoteSunriseLiveData.emit(sunrise)
@@ -123,19 +133,18 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
                 _remoteAsrLiveData.emit(asr)
                 _remoteMagribeLiveData.emit(magribe)
                 _remoteIshaLiveData.emit(isha)
-
             }
 
         }
         return TimeStore(0, fagr, sunrise, duhr, asr, magribe, isha)
     }
 
-    fun getLocation() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _locationLiveData.emit(
-                repository.getLocationLongitude()
-            )
+    fun getLocation(): Location {
+        val location = repository.getLocationCordination()
+        viewModelScope.launch {
+            _locationLiveData.emit(location)
         }
+        return location
     }
 
     fun getDate() {
@@ -144,17 +153,14 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         }
     }
 
-    fun insertLocalTimings(time: TimeStore) {
-        repository.insertToLocalRemaining(time)
-    }
 
     fun getStoredTimings(): TimeStore {
-        fagr = repository.getStoredTimings().fagr
-        sunrise = repository.getStoredTimings().sunrise
-        duhr = repository.getStoredTimings().duhr
-        asr = repository.getStoredTimings().asr
-        magribe = repository.getStoredTimings().magribe
-        isha = repository.getStoredTimings().isha
+        fagr = repository.getAllStoredTimings().fagr
+        sunrise = repository.getAllStoredTimings().sunrise
+        duhr = repository.getAllStoredTimings().duhr
+        asr = repository.getAllStoredTimings().asr
+        magribe = repository.getAllStoredTimings().magribe
+        isha = repository.getAllStoredTimings().isha
         viewModelScope.launch(Dispatchers.IO) {
             //Emit PrayerTimes
             _remoteFagrLiveData.emit(fagr)
@@ -168,22 +174,41 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
 
     }
 
-    fun insertLastLocation(lastLocation: LastLocation) {
+
+    fun insertLocalTimings(time: TimeStore) {
+        repository.insertToLocalPrayingTimes(time)
+    }
+
+    fun insertLastAddress(lastLocation: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.insertLocation(lastLocation)
+            repository.insertLastAddress(lastLocation)
         }
     }
 
-    fun getLastLocation() {
+    fun updateLastAddress(lastLocation: String) {
+        repository.updateLastAddress(lastLocation)
+    }
+
+    fun updateLocalTimings(prayingTime: TimeStore) {
+        repository.updatePrayingTimes(prayingTime)
+    }
+
+    fun getLastAddress() {
         viewModelScope.launch(Dispatchers.IO) {
-            _latLongLiveData.emit(repository.getLastLocation())
+            _lastAddressLiveData.send(LastLocation(0,repository.getLastAddress()))
+        }
+    }
+
+    fun getAllPrayingTimes() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _prayingTimesLiveData.send(repository.getAllStoredTimings())
         }
     }
 
 
     fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String) {
         viewModelScope.launch {
-            val durationMillis = repository.getRemainingTimeToNextPrayer(currentTime, "6:10")
+            val durationMillis = repository.getRemainingTimeToNextPrayer(currentTime, "8:30")
 
             val countDownTimer = object : CountDownTimer(durationMillis, 60000) {
                 override fun onTick(millisUntilFinished: Long) {
@@ -210,3 +235,4 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         }
     }
 }
+

@@ -10,11 +10,11 @@ import com.bassamkhafgy.islamy.data.local.TimeStore
 @Dao
 interface LocationDao {
     @Insert
-    fun insertLocation(lastLocation: LastLocation)
+    fun insertAddress(lastLocation: LastLocation)
 
     @Update
-    fun updateLocation(lastLocation: LastLocation)
+    fun updateAddress(lastLocation: LastLocation)
 
     @Query("SELECT * FROM `last location`")
-    fun getLastLocation(): List<LastLocation>
+    fun getLastAddress(): List<LastLocation>
 }

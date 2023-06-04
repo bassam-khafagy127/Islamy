@@ -8,6 +8,5 @@ import com.bassamkhafgy.islamy.utill.Constants
 data class LastLocation(
     @PrimaryKey(autoGenerate = true)
      val id: Int,
-     val lattitued: String,
-     val longtitued: String
+     val location: String
 )

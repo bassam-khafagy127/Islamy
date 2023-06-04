@@ -26,7 +26,7 @@ class HomeRepository @Inject constructor(
     private val timingsDataBase: TimingsDataBase
 ) {
     init {
-        getLocationLongitude()
+        getLocationCordination()
     }
 
     private val _location: Location = Location("")
@@ -63,7 +63,7 @@ class HomeRepository @Inject constructor(
 
 
     @SuppressLint("MissingPermission")
-    fun getLocationLongitude(): Location {
+    fun getLocationCordination(): Location {
         val location = fusedLocationProviderClient.lastLocation
         location.addOnSuccessListener {
 
@@ -80,22 +80,29 @@ class HomeRepository @Inject constructor(
         return _location
     }
 
-    fun insertToLocalRemaining(time: TimeStore) {
+    fun insertLastAddress(lastLocation: String) {
+        timingsDataBase.locationDao().insertAddress(LastLocation(0,lastLocation))
+    }
+
+    fun insertToLocalPrayingTimes(time: TimeStore) {
         timingsDataBase.timingsDao().insertTimings(time)
     }
 
-    fun getStoredTimings(): TimeStore {
+    fun updateLastAddress(lastLocation: String) {
+        timingsDataBase.locationDao().updateAddress(LastLocation(0,lastLocation))
+    }
+
+    fun updatePrayingTimes(lastPrayingTime: TimeStore) {
+        timingsDataBase.timingsDao().updateTimings(lastPrayingTime)
+    }
+
+    fun getLastAddress(): String {
+        val size = timingsDataBase.locationDao().getLastAddress().size
+        return timingsDataBase.locationDao().getLastAddress()[size - 1].location
+    }
+
+    fun getAllStoredTimings(): TimeStore {
         val size = timingsDataBase.timingsDao().getAllTimings().size
         return timingsDataBase.timingsDao().getAllTimings()[size - 1]
     }
-
-    fun getLastLocation(): LastLocation {
-        val size = timingsDataBase.locationDao().getLastLocation().size
-        return timingsDataBase.locationDao().getLastLocation()[size - 1]
-    }
-
-    fun insertLocation(lastLocation: LastLocation) {
-        timingsDataBase.locationDao().insertLocation(lastLocation)
-    }
-
 }

@@ -53,15 +53,6 @@ class HomeRepository @Inject constructor(
         return getPrayerRemainingTime(currentTime, prayerTime)
     }
 
-
-    fun getDefaultLocation(): Location {
-        val defaultLocation = Location("")
-        defaultLocation.latitude = Constants.Location.CAIRO_LAT
-        defaultLocation.longitude = Constants.Location.CAIRO_LONG
-        return defaultLocation
-    }
-
-
     @SuppressLint("MissingPermission")
     fun getLocationCordination(): Location {
         val location = fusedLocationProviderClient.lastLocation
@@ -81,7 +72,7 @@ class HomeRepository @Inject constructor(
     }
 
     fun insertLastAddress(lastLocation: String) {
-        timingsDataBase.locationDao().insertAddress(LastLocation(0,lastLocation))
+        timingsDataBase.locationDao().insertAddress(LastLocation(0, lastLocation))
     }
 
     fun insertToLocalPrayingTimes(time: TimeStore) {
@@ -89,7 +80,7 @@ class HomeRepository @Inject constructor(
     }
 
     fun updateLastAddress(lastLocation: String) {
-        timingsDataBase.locationDao().updateAddress(LastLocation(0,lastLocation))
+        timingsDataBase.locationDao().updateAddress(LastLocation(0, lastLocation))
     }
 
     fun updatePrayingTimes(lastPrayingTime: TimeStore) {
@@ -104,5 +95,13 @@ class HomeRepository @Inject constructor(
     fun getAllStoredTimings(): TimeStore {
         val size = timingsDataBase.timingsDao().getAllTimings().size
         return timingsDataBase.timingsDao().getAllTimings()[size - 1]
+    }
+
+    fun checkPrayingTimeValues(): Int {
+        return timingsDataBase.timingsDao().isTableEmpty()
+    }
+
+    fun checkAddressesValues(): Int {
+        return timingsDataBase.locationDao().isTableEmpty()
     }
 }

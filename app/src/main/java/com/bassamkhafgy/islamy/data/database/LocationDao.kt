@@ -17,4 +17,7 @@ interface LocationDao {
 
     @Query("SELECT * FROM `last location`")
     fun getLastAddress(): List<LastLocation>
+
+    @Query("SELECT COUNT(*) FROM `last location`")
+    fun isTableEmpty(): Int
 }

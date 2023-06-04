@@ -95,7 +95,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:singleLine="true"
-                    android:text="@{viewModel.dataLiveData}"
                     android:textAlignment="center"
                     android:textColor="@color/g_blueDark"
                     android:textStyle="bold"

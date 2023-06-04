@@ -3,6 +3,7 @@ package com.bassamkhafgy.islamy.fragments
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -71,47 +72,47 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onStart() {
         super.onStart()
         checkPermission()
-        viewModel.getRemainingTimeToNextPrayer(currentHour, "11:00")
+        viewModel.getRemainingTimeToNextPrayer(currentHour, "12:20")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         if (isInternetConnected(requireContext())) {
 
             lifecycleScope.launch(Dispatchers.Main) {
                 //get Times
-                if (latitude == 0.0 || longitude == 0.0) {
+                if (latitude == 0.0 && longitude == 0.0) {
                     viewModel.getTimings(
                         convertToApiDateFormat(date), CAIRO_LAT.toString(), CAIRO_LONG.toString()
                     )
+                    viewModel.getAddress(CAIRO_LAT, CAIRO_LONG)
                 } else {
-
                     viewModel.getTimings(
                         convertToApiDateFormat(date), latitude.toString(), longitude.toString()
                     )
-
-                }
-                //get address
-                lifecycleScope.launch {
-                    if (latitude == 0.0 || longitude == 0.0) {
-                        viewModel.getAddress(CAIRO_LAT, CAIRO_LONG)
-                    } else viewModel.getAddress(latitude, longitude)
-
+                    viewModel.getAddress(latitude, longitude)
                 }
 
             }
 
             lifecycleScope.launch {
-                viewModel.dataLiveData.collect { newDate ->
-                    date = newDate
+                viewModel.remainingTimeLiveData.collect {
+                    remainingTimeForNextPray = it
                 }
             }
 
             lifecycleScope.launch {
                 viewModel.addressLiveData.collect { newAddress ->
                     address = newAddress
+                    if (viewModel.checkAddressesValues() > 0) {
+                        Log.d("DATABASETEST", "BIGER")
+                        viewModel.updateLastAddress(address)
+
+                    } else {
+                        Log.d("DATABASETEST", "Smailler")
+                        viewModel.insertLastAddress(address)
+                    }
                 }
             }
 
@@ -138,7 +139,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 viewModel.remoteIshaLiveData.collect { newValue -> isha = newValue }
 
             }
-
+            lifecycleScope.launch(Dispatchers.IO) {
+                val timings = TimeStore(0, fagr, sunrise, duhr, asr, magribe, isha)
+                fagr = timings.fagr
+                sunrise = timings.sunrise
+                duhr = timings.duhr
+                asr = timings.asr
+                magribe = timings.magribe
+                isha = timings.isha
+                viewModel.updateLocalTimings(timings)
+            }
+            lifecycleScope.launch(Dispatchers.IO) {
+                val lastAddress = address
+                viewModel.updateLastAddress(lastAddress)
+            }
         } else {
 
             lifecycleScope.launch(Dispatchers.IO) {
@@ -166,21 +180,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
 
 
-        lifecycleScope.launch {
-            viewModel.remainingTimeLiveData.collect {
-                remainingTimeForNextPray = it
-                Toast.makeText(requireContext(), "IT:$it", Toast.LENGTH_LONG).show()
-            }
-
-        }
         binding.settingBtn.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 val timings = TimeStore(0, fagr, sunrise, duhr, asr, magribe, isha)
-                viewModel.insertLocalTimings(timings)
+                if (viewModel.checkPrayingTimeValues() > 0) {
+                    Log.d("DATABASETEST", "BIGER")
+                    viewModel.updateLocalTimings(timings)
+
+                } else {
+                    Log.d("DATABASETEST", "Smailler")
+                    viewModel.insertLocalTimings(timings)
+                }
             }
         }
-
-
         setViews()
         addCallbacks(view)
 
@@ -220,6 +232,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             magrebTextView.text = magribe
             ishaTextView.text = isha
             addressTV.text = address
+            dateTV.text = date
         }
     }
 

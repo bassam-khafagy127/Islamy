@@ -39,11 +39,8 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     val lastAddressLiveData = _lastAddressLiveData.receiveAsFlow()
 
 
-    private val _locationLiveData = MutableStateFlow(repository.getDefaultLocation())
+    private val _locationLiveData = MutableStateFlow(repository.getLocationCordination())
     val locationLiveData: StateFlow<Location> = _locationLiveData
-
-    private val _dateLiveData = MutableStateFlow("")
-    val dataLiveData: StateFlow<String> = _dateLiveData
 
     private val _addressLiveData = MutableStateFlow("")
     val addressLiveData: StateFlow<String> = _addressLiveData
@@ -96,7 +93,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         }
     }
 
-    fun getTimings(day: String, latitude: String, longitude: String): TimeStore {
+    fun getTimings(day: String, latitude: String, longitude: String) {
         viewModelScope.launch {
 
             val timings: Response<TimeResponse> = repository.getTimings(day, latitude, longitude)
@@ -136,7 +133,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
             }
 
         }
-        return TimeStore(0, fagr, sunrise, duhr, asr, magribe, isha)
+//        return TimeStore(0, fagr, sunrise, duhr, asr, magribe, isha)
     }
 
     fun getLocation(): Location {
@@ -147,10 +144,8 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         return location
     }
 
-    fun getDate() {
-        viewModelScope.launch {
-            _dateLiveData.emit(repository.getDate())
-        }
+    fun getDate(): String {
+        return repository.getDate()
     }
 
 
@@ -195,7 +190,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
 
     fun getLastAddress() {
         viewModelScope.launch(Dispatchers.IO) {
-            _lastAddressLiveData.send(LastLocation(0,repository.getLastAddress()))
+            _lastAddressLiveData.send(LastLocation(0, repository.getLastAddress()))
         }
     }
 
@@ -208,7 +203,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
 
     fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String) {
         viewModelScope.launch {
-            val durationMillis = repository.getRemainingTimeToNextPrayer(currentTime, "8:30")
+            val durationMillis = repository.getRemainingTimeToNextPrayer(currentTime, prayerTime)
 
             val countDownTimer = object : CountDownTimer(durationMillis, 60000) {
                 override fun onTick(millisUntilFinished: Long) {
@@ -226,13 +221,25 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
                 override fun onFinish() {
                     viewModelScope.launch {
                         _remainingTimeLiveData.emit("0:0")
-
                     }
                 }
 
             }
             countDownTimer.start()
         }
+    }
+
+    fun checkAddressesValues(): Int {
+        var value = 0
+        viewModelScope.launch(Dispatchers.IO) { value = repository.checkAddressesValues() }
+        return value
+    }
+
+    fun checkPrayingTimeValues(): Int {
+//        var value = 0
+//        viewModelScope.launch(Dispatchers.IO) { value = repository.checkPrayingTimeValues() }
+//        return value
+        return repository.checkPrayingTimeValues()
     }
 }
 

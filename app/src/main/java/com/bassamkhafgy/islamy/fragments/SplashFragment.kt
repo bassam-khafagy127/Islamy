@@ -8,17 +8,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import com.bassamkhafgy.islamy.R
 import com.bassamkhafgy.islamy.databinding.FragmentSplashBinding
 import com.bassamkhafgy.islamy.utill.Constants
 import com.bassamkhafgy.islamy.utill.changeLanguage
+import com.bassamkhafgy.islamy.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class SplashFragment : Fragment(R.layout.fragment_splash) {
     private lateinit var binding: FragmentSplashBinding
+    //  private val viewModel by viewModels<HomeViewModel>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -49,7 +53,7 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
         }
     }
 
-       private fun checkPermission() {
+    private fun checkPermission() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION

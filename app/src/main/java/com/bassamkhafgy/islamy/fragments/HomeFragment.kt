@@ -145,8 +145,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
             Log.e("REMAiningTime: currentHour", currentHour)
 
-            viewModel.getRemainingTimeToNextPrayer("1:6", "4:4")
-
         } else {
             Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_LONG).show()
         }
@@ -154,6 +152,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         lifecycleScope.launch {
             viewModel.currentHourLiveData.collect {
                 currentHour = it
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.remainingTimeLiveData.collect {
+                binding.nextPrayerTimeTV.text = it
             }
         }
 

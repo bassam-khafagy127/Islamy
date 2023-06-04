@@ -2,6 +2,8 @@ package com.bassamkhafgy.islamy.utill
 
 import android.os.CountDownTimer
 import android.text.format.Time
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
@@ -67,14 +69,14 @@ fun getPrayerRemainingTime(currentTime: String, prayerTime: String): MutableStat
             val minutes = millisUntilFinished / (1000 * 60) % 60
             val hours = millisUntilFinished / (1000 * 60 * 60)
 
-            remainingTime = "$hours:$minutes\n$seconds "
-            runBlocking {
+            remainingTime = "$hours:$minutes "
+            runBlocking(Dispatchers.Default) {
                 _remainingTimeLiveData.emit(remainingTime)
             }
         }
 
         override fun onFinish() {
-            remainingTime = "0:0"
+            //  _remainingTimeLiveData.emit("0;0")
         }
 
     }

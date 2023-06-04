@@ -12,7 +12,9 @@ import com.bassamkhafgy.islamy.utill.getPrayerRemainingTime
 import com.bassamkhafgy.islamy.utill.getSystemCurrentTime
 import com.bassamkhafgy.islamy.utill.getSystemDate
 import com.google.android.gms.location.FusedLocationProviderClient
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -46,7 +48,7 @@ class HomeRepository @Inject constructor(
         return getSystemCurrentTime()
     }
 
-    fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String): StateFlow<String> {
+    fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String): Flow<String> {
         return getPrayerRemainingTime(currentTime, prayerTime)
     }
 

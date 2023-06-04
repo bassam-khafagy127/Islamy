@@ -1,6 +1,7 @@
 package com.bassamkhafgy.islamy.di
 
 import android.content.Context
+import com.bassamkhafgy.islamy.data.database.TimingsDataBase
 import com.bassamkhafgy.islamy.networking.TimeApiService
 import com.bassamkhafgy.islamy.repository.HomeRepository
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -21,9 +22,10 @@ object AppModule {
     fun provideHomeRepository(
         @ApplicationContext appContext: Context,
         fusedLocationProviderClient: FusedLocationProviderClient,
-        timeApiService: TimeApiService
+        timeApiService: TimeApiService,
+        timingsDataBase: TimingsDataBase
     ): HomeRepository {
-        return HomeRepository(appContext, fusedLocationProviderClient, timeApiService)
+        return HomeRepository(appContext, fusedLocationProviderClient, timeApiService,timingsDataBase)
     }
 
     @Provides

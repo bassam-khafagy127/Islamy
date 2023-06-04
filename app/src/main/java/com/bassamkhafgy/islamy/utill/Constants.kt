@@ -18,6 +18,13 @@ object Constants {
         val ENGLISH_LANGUAGE = "en"
     }
 
+    object DATA_BASE {
+        const val PRAYER_TABLE_NAME = "PRAYER TIMES"
+        const val LOCATION_TABLE_NAME = "LAST LOCATION"
+        const val TIMINGS_DATABASE_NAME = "PRAYER TIMES DATABASE"
+
+    }
+
 //    object PrayerTimes {
 //        //"http://api.aladhan.com/v1/timings/1-6-2023?latitude=30.923512&longitude=31.622066&method=2"
 //        // const val BaseUrl="http://api.aladhan.com/v1/timings/1-6-2023?latitude=30.923512&longitude=31.622066&method=2"

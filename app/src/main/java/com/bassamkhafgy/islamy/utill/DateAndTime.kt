@@ -39,7 +39,6 @@ fun convertToApiDateFormat(inputDate: String): String {
     return outputFormat.format(date!!)
 }
 
-var remainingTime = ""
 fun getPrayerRemainingTime(
     currentTime: String,
     prayerTime: String

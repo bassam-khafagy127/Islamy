@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.bassamkhafgy.islamy.R
+import com.bassamkhafgy.islamy.data.local.TimeStore
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
 import com.bassamkhafgy.islamy.utill.Constants.Location.CAIRO_LAT
@@ -28,9 +29,8 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
+
     private lateinit var binding: FragmentHomeBinding
-
-
     private val viewModel by viewModels<HomeViewModel>()
 
     private var latitude: Double = 0.0
@@ -44,6 +44,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private var magribe = ""
     private var isha = ""
 
+    private var remainingTimeForNextPray = ""
+
     private var currentHour = ""
 
     private var address = ""
@@ -52,36 +54,34 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.getLocation()
-        viewModel.getDate()
-        viewModel.getCurrentHour()
-
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-
+        viewModel.getDate()
+        viewModel.getCurrentHour()
         //layout Inflation and preparation
         binding = FragmentHomeBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         return binding.root
     }
+
     override fun onStart() {
         super.onStart()
         checkPermission()
-
-//        viewModel.getRemainingTimeToNextPrayer(currentHour, "12:53")
-
+        viewModel.getRemainingTimeToNextPrayer(currentHour, "11:00")
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         if (isInternetConnected(requireContext())) {
 
             lifecycleScope.launch(Dispatchers.Main) {
+                //get Times
                 if (latitude == 0.0 || longitude == 0.0) {
                     viewModel.getTimings(
                         convertToApiDateFormat(date), CAIRO_LAT.toString(), CAIRO_LONG.toString()
@@ -93,6 +93,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     )
 
                 }
+                //get address
                 lifecycleScope.launch {
                     if (latitude == 0.0 || longitude == 0.0) {
                         viewModel.getAddress(CAIRO_LAT, CAIRO_LONG)
@@ -115,33 +116,40 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
 
             //Prayer Times
-            lifecycleScope.launch {
-                viewModel.remoteFagrLiveData.collect { newValue ->
-                    fagr = newValue
-                }
-            }.start()
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
+                viewModel.remoteFagrLiveData.collect { newValue -> fagr = newValue }
+            }
+            lifecycleScope.launch(Dispatchers.IO) {
                 viewModel.remoteSunriseLiveData.collect { newValue -> sunrise = newValue }
-            }.start()
-            lifecycleScope.launch {
+            }
+            lifecycleScope.launch(Dispatchers.IO) {
                 viewModel.remoteDuhrLiveData.collect { newValue -> duhr = newValue }
             }
 
-            lifecycleScope.launch {
-                viewModel.remoteAsrLiveData.collect { newValue -> sunrise = newValue }
-            }.start()
+            lifecycleScope.launch(Dispatchers.IO) {
+                viewModel.remoteAsrLiveData.collect { newValue -> asr = newValue }
+            }
 
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 viewModel.remoteMagribeLiveData.collect { newValue -> magribe = newValue }
-            }.start()
+            }
 
-            lifecycleScope.launch {
-                viewModel.remoteIshaLiveData.collect { newValue -> magribe = newValue }
+            lifecycleScope.launch(Dispatchers.IO) {
+                viewModel.remoteIshaLiveData.collect { newValue -> isha = newValue }
 
-            }.start()
+            }
 
         } else {
-            Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_LONG).show()
+
+            lifecycleScope.launch(Dispatchers.IO) {
+                val timings = viewModel.getStoredTimings()
+                fagr = timings.fagr
+                sunrise = timings.sunrise
+                duhr = timings.duhr
+                asr = timings.asr
+                magribe = timings.magribe
+                isha = timings.isha
+            }
         }
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.locationLiveData.collect {
@@ -160,20 +168,25 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         lifecycleScope.launch {
             viewModel.remainingTimeLiveData.collect {
-                binding.nextPrayerTimeTV.text = it
+                remainingTimeForNextPray = it
+                Toast.makeText(requireContext(), "IT:$it", Toast.LENGTH_LONG).show()
+            }
+
+        }
+        binding.settingBtn.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val timings = TimeStore(0, fagr, sunrise, duhr, asr, magribe, isha)
+                viewModel.insertLocalTimings(timings)
             }
         }
 
-        setTimes()
+
+        setViews()
         addCallbacks(view)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Toast.makeText(requireContext(), "PrayTime:Fage$fagr", Toast.LENGTH_LONG).show()
-        viewModel.getRemainingTimeToNextPrayer(currentHour, "12:53")
 
     }
+
+
     private fun addCallbacks(view: View) {
         binding.apply {
 
@@ -193,15 +206,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
             }
 
-            settingBtn.setOnClickListener {
-                Toast.makeText(requireContext(), "$latitude", Toast.LENGTH_LONG).show()
-            }
 
         }
 
     }
 
-    private fun setTimes() {
+    private fun setViews() {
         binding.apply {
             fagrTextView.text = fagr
             shroukTextView.text = sunrise
@@ -209,6 +219,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             asrCardTextView.text = asr
             magrebTextView.text = magribe
             ishaTextView.text = isha
+            addressTV.text = address
         }
     }
 
@@ -225,11 +236,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 Constants.Location.LOCATION_PERMESSION_CODE
             )
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-
     }
 
 

@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.util.Log
+import com.bassamkhafgy.islamy.data.database.TimingsDataBase
+import com.bassamkhafgy.islamy.data.local.LastLocation
+import com.bassamkhafgy.islamy.data.local.TimeStore
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.networking.TimeApiService
 import com.bassamkhafgy.islamy.utill.Constants
@@ -13,7 +16,6 @@ import com.bassamkhafgy.islamy.utill.getPrayerRemainingTime
 import com.bassamkhafgy.islamy.utill.getSystemCurrentTime
 import com.bassamkhafgy.islamy.utill.getSystemDate
 import com.google.android.gms.location.FusedLocationProviderClient
-import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -21,6 +23,7 @@ class HomeRepository @Inject constructor(
     private val context: Context,
     private var fusedLocationProviderClient: FusedLocationProviderClient,
     private val timeApiService: TimeApiService,
+    private val timingsDataBase: TimingsDataBase
 ) {
     init {
         getLocationLongitude()
@@ -75,6 +78,24 @@ class HomeRepository @Inject constructor(
             Log.e(ERROR_TAG, it.message.toString())
         }
         return _location
+    }
+
+    fun insertToLocalRemaining(time: TimeStore) {
+        timingsDataBase.timingsDao().insertTimings(time)
+    }
+
+    fun getStoredTimings(): TimeStore {
+        val size = timingsDataBase.timingsDao().getAllTimings().size
+        return timingsDataBase.timingsDao().getAllTimings()[size - 1]
+    }
+
+    fun getLastLocation(): LastLocation {
+        val size = timingsDataBase.locationDao().getLastLocation().size
+        return timingsDataBase.locationDao().getLastLocation()[size - 1]
+    }
+
+    fun insertLocation(lastLocation: LastLocation) {
+        timingsDataBase.locationDao().insertLocation(lastLocation)
     }
 
 }

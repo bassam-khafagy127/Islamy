@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="kotlinx.coroutines.flow.Flow" />
+
         <variable
             name="viewModel"
             type="com.bassamkhafgy.islamy.viewmodel.HomeViewModel" />
@@ -148,7 +150,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:text="@{viewModel.remainingTimeLiveData}"
+                    android:text="@string/_1_20_nminutes"
                     android:textAlignment="center"
                     android:textColor="@color/g_blue"
                     android:textSize="14sp"

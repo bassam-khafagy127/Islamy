@@ -3,7 +3,6 @@ package com.bassamkhafgy.islamy.fragments
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,15 +49,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private var address = ""
     private var date = getSystemDate()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.getLocation()
+        viewModel.getDate()
+        viewModel.getCurrentHour()
+
+    }
+
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
 
         checkPermission()
-        //getLocation
-        viewModel.getLocation()
         //layout Inflation and preparation
         binding = FragmentHomeBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
@@ -66,31 +69,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        checkPermission()
-        viewModel.getCurrentHour()
-        lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.locationLiveData.collect {
-                latitude = it.latitude
-                longitude = it.longitude
-                altitued = it.latitude
-            }
-        }
-
-        viewModel.getRemainingTimeToNextPrayer("1:09", "4:4")
-
-        viewModel.getDate()
+    override fun onStart() {
+        super.onStart()
         if (isInternetConnected(requireContext())) {
-            //AddressGeocoder
 
             lifecycleScope.launch(Dispatchers.Main) {
                 if (latitude == 0.0 || longitude == 0.0) {
                     viewModel.getTimings(
-                        convertToApiDateFormat(date),
-                        CAIRO_LAT.toString(),
-                        CAIRO_LONG.toString()
+                        convertToApiDateFormat(date), CAIRO_LAT.toString(), CAIRO_LONG.toString()
                     )
                 } else {
 
@@ -125,35 +111,58 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 viewModel.remoteFagrLiveData.collect { newValue ->
                     fagr = newValue
                 }
-            }
+            }.start()
             lifecycleScope.launch {
                 viewModel.remoteSunriseLiveData.collect { newValue -> sunrise = newValue }
-            }
-
+            }.start()
             lifecycleScope.launch {
                 viewModel.remoteDuhrLiveData.collect { newValue -> duhr = newValue }
             }
+
             lifecycleScope.launch {
                 viewModel.remoteAsrLiveData.collect { newValue -> sunrise = newValue }
-            }
+            }.start()
+
             lifecycleScope.launch {
                 viewModel.remoteMagribeLiveData.collect { newValue -> magribe = newValue }
-            }
+            }.start()
+
             lifecycleScope.launch {
                 viewModel.remoteIshaLiveData.collect { newValue -> magribe = newValue }
 
-            }
-            Log.e("REMAiningTime: currentHour", currentHour)
+            }.start()
 
         } else {
             Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_LONG).show()
+        }
+//        viewModel.getRemainingTimeToNextPrayer(currentHour, "12:53")
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getRemainingTimeToNextPrayer(currentHour, "12:53")
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        checkPermission()
+        lifecycleScope.launch(Dispatchers.Main) {
+            viewModel.locationLiveData.collect {
+                latitude = it.latitude
+                longitude = it.longitude
+                altitued = it.latitude
+            }
         }
 
         lifecycleScope.launch {
             viewModel.currentHourLiveData.collect {
                 currentHour = it
             }
-        }
+        }.start()
+
+
         lifecycleScope.launch {
             viewModel.remainingTimeLiveData.collect {
                 binding.nextPrayerTimeTV.text = it
@@ -164,7 +173,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         addCallbacks(view)
     }
 
-
     private fun addCallbacks(view: View) {
         binding.apply {
 
@@ -172,20 +180,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 val lat = latitude
                 if (lat == 0.0) {
                     val action = HomeFragmentDirections.actionHomeFragmentToQiblaFragment(
-                        address,
-                        date,
-                        CAIRO_LAT.toFloat(),
-                        CAIRO_LONG.toFloat(),
-                        altitued.toFloat()
+                        address, date, CAIRO_LAT.toFloat(), CAIRO_LONG.toFloat(), altitued.toFloat()
                     )
                     Navigation.findNavController(view).navigate(action)
                 } else {
                     val action = HomeFragmentDirections.actionHomeFragmentToQiblaFragment(
-                        address,
-                        date,
-                        latitude.toFloat(),
-                        longitude.toFloat(),
-                        altitued.toFloat()
+                        address, date, latitude.toFloat(), longitude.toFloat(), altitued.toFloat()
                     )
                     Navigation.findNavController(view).navigate(action)
                 }
@@ -208,17 +208,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             asrCardTextView.text = asr
             magrebTextView.text = magribe
             ishaTextView.text = isha
-
         }
     }
 
     private fun checkPermission() {
         if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
+                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
+                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
@@ -227,6 +224,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 Constants.Location.LOCATION_PERMESSION_CODE
             )
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
     }
 
 

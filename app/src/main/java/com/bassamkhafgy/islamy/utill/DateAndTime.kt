@@ -1,16 +1,14 @@
 package com.bassamkhafgy.islamy.utill
 
-import android.os.CountDownTimer
 import android.text.format.Time
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import kotlin.coroutines.coroutineContext
 
-private val _remainingTimeLiveData = MutableStateFlow("")
+private var _remainingTimeLiveData = MutableStateFlow("")
 
 fun getSystemDate(): String {
     val currentDate = Calendar.getInstance().time
@@ -23,13 +21,13 @@ fun getSystemDate(): String {
 
 fun getSystemCurrentTime(): String {
     val currentTime = Calendar.getInstance()
-    val timeFormat = SimpleDateFormat("hh:mm a", Locale.ENGLISH)
+    val timeFormat = SimpleDateFormat("hh:mm", Locale.ENGLISH)
     return timeFormat.format(currentTime.time)
 }
 
 fun convertTo12HourFormat(time24: String): String {
     val inputFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-    val outputFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("hh:mm", Locale.ENGLISH)
     val time = inputFormat.parse(time24)
     return outputFormat.format(time!!)
 }
@@ -42,7 +40,10 @@ fun convertToApiDateFormat(inputDate: String): String {
 }
 
 var remainingTime = ""
-fun getPrayerRemainingTime(currentTime: String, prayerTime: String): MutableStateFlow<String> {
+fun getPrayerRemainingTime(
+    currentTime: String,
+    prayerTime: String
+): Long {
     val currentTimeObj = Time()
     val prayerTimeObj = Time()
     // Set current time
@@ -61,26 +62,6 @@ fun getPrayerRemainingTime(currentTime: String, prayerTime: String): MutableStat
         prayerTimeObj.minute += 1
     }
 
-    val durationMillis = prayerTimeObj.toMillis(true) - currentTimeObj.toMillis(true)
 
-    val countDownTimer = object : CountDownTimer(durationMillis, 1000) {
-        override fun onTick(millisUntilFinished: Long) {
-            val seconds = millisUntilFinished / 1000 % 60
-            val minutes = millisUntilFinished / (1000 * 60) % 60
-            val hours = millisUntilFinished / (1000 * 60 * 60)
-
-            remainingTime = "$hours:$minutes "
-            runBlocking(Dispatchers.Default) {
-                _remainingTimeLiveData.emit(remainingTime)
-            }
-        }
-
-        override fun onFinish() {
-            //  _remainingTimeLiveData.emit("0;0")
-        }
-
-    }
-
-    countDownTimer.start()
-    return _remainingTimeLiveData
+    return prayerTimeObj.toMillis(true) - currentTimeObj.toMillis(true)
 }

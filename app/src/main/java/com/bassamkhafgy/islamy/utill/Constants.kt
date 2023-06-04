@@ -11,6 +11,8 @@ object Constants {
         const val CAIRO_LONG = 31.233334
     }
 
+    const val ERROR_TAG = "ERROR_TAG"
+
     object Language {
         val ARABIC_LANGUAGE = "ar"
         val ENGLISH_LANGUAGE = "en"

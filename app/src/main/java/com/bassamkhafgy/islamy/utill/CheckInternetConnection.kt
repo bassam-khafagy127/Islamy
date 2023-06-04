@@ -14,6 +14,7 @@ fun isInternetConnected(context: Context): Boolean {
         val network = connectivityManager.activeNetwork
         val capabilities = connectivityManager.getNetworkCapabilities(network)
         capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ?: false
+
     }
 
     // For devices running below Android Q

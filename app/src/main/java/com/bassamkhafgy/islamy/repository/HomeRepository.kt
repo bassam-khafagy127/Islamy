@@ -7,14 +7,13 @@ import android.util.Log
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.networking.TimeApiService
 import com.bassamkhafgy.islamy.utill.Constants
+import com.bassamkhafgy.islamy.utill.Constants.ERROR_TAG
 import com.bassamkhafgy.islamy.utill.getAddressGeocoder
 import com.bassamkhafgy.islamy.utill.getPrayerRemainingTime
 import com.bassamkhafgy.islamy.utill.getSystemCurrentTime
 import com.bassamkhafgy.islamy.utill.getSystemDate
 import com.google.android.gms.location.FusedLocationProviderClient
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.buffer
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -23,7 +22,6 @@ class HomeRepository @Inject constructor(
     private var fusedLocationProviderClient: FusedLocationProviderClient,
     private val timeApiService: TimeApiService,
 ) {
-
     init {
         getLocationLongitude()
     }
@@ -48,7 +46,7 @@ class HomeRepository @Inject constructor(
         return getSystemCurrentTime()
     }
 
-    fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String): Flow<String> {
+    fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String): Long {
         return getPrayerRemainingTime(currentTime, prayerTime)
     }
 
@@ -74,7 +72,7 @@ class HomeRepository @Inject constructor(
             }
         }.addOnFailureListener {
 //            Toast.makeText(requireContext(), "Error : ${it.message}", Toast.LENGTH_LONG).show()
-            Log.e("SSSSSSS", it.message.toString())
+            Log.e(ERROR_TAG, it.message.toString())
         }
         return _location
     }

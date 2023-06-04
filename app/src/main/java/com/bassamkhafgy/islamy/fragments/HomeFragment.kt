@@ -61,16 +61,24 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
 
-        checkPermission()
         //layout Inflation and preparation
         binding = FragmentHomeBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         return binding.root
     }
-
     override fun onStart() {
         super.onStart()
+        checkPermission()
+
+//        viewModel.getRemainingTimeToNextPrayer(currentHour, "12:53")
+
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         if (isInternetConnected(requireContext())) {
 
             lifecycleScope.launch(Dispatchers.Main) {
@@ -135,15 +143,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         } else {
             Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_LONG).show()
         }
-//        viewModel.getRemainingTimeToNextPrayer(currentHour, "12:53")
-
-    }
-
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        checkPermission()
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.locationLiveData.collect {
                 latitude = it.latitude
@@ -164,13 +163,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 binding.nextPrayerTimeTV.text = it
             }
         }
-        Toast.makeText(requireContext(), "PrayTime:Fage$fagr", Toast.LENGTH_LONG).show()
-        viewModel.getRemainingTimeToNextPrayer(currentHour, "12:53")
 
         setTimes()
         addCallbacks(view)
     }
 
+    override fun onResume() {
+        super.onResume()
+        Toast.makeText(requireContext(), "PrayTime:Fage$fagr", Toast.LENGTH_LONG).show()
+        viewModel.getRemainingTimeToNextPrayer(currentHour, "12:53")
+
+    }
     private fun addCallbacks(view: View) {
         binding.apply {
 

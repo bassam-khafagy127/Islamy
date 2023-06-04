@@ -139,10 +139,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.getRemainingTimeToNextPrayer(currentHour, "12:53")
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -160,7 +156,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             viewModel.currentHourLiveData.collect {
                 currentHour = it
             }
-        }.start()
+        }
 
 
         lifecycleScope.launch {
@@ -168,6 +164,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 binding.nextPrayerTimeTV.text = it
             }
         }
+        Toast.makeText(requireContext(), "PrayTime:Fage$fagr", Toast.LENGTH_LONG).show()
+        viewModel.getRemainingTimeToNextPrayer(currentHour, "12:53")
 
         setTimes()
         addCallbacks(view)

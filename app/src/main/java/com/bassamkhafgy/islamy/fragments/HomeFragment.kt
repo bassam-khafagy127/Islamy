@@ -93,9 +93,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
             }
 
+
             lifecycleScope.launch {
                 viewModel.remainingTimeLiveData.collect {
                     remainingTimeForNextPray = it
+                }
+            }
+            lifecycleScope.launch {
+                viewModel.addressLiveData.collect {
+                    address = it.location
                 }
             }
 
@@ -194,11 +200,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
             }
         }
-        setViews()
-        addCallbacks(view)
+
         lifecycleScope.launch {
             delay(2000)
-            Toast.makeText(requireContext(), "Fagr:$fagr", Toast.LENGTH_LONG).show()
             val prayTime = viewModel.getNextPrayerTimeV(
                 PrayerScheduleConverter(
                     fagr,
@@ -209,34 +213,24 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     isha
                 )
             )
-            viewModel.getRemainingTimeToNextPrayer(currentHour, prayTime.second,prayTime.first)
+            viewModel.getRemainingTimeToNextPrayer(currentHour, prayTime.second, prayTime.first)
         }
+        setViews()
+        binding.qiblaBtn.setOnClickListener {
 
-    }
-
-
-    private fun addCallbacks(view: View) {
-        binding.apply {
-
-            qiblaBtn.setOnClickListener {
-                val lat = latitude
-                if (lat == 0.0) {
-                    val action = HomeFragmentDirections.actionHomeFragmentToQiblaFragment(
-                        address, date, CAIRO_LAT.toFloat(), CAIRO_LONG.toFloat(), altitued.toFloat()
-                    )
-                    Navigation.findNavController(view).navigate(action)
-                } else {
-                    val action = HomeFragmentDirections.actionHomeFragmentToQiblaFragment(
-                        address, date, latitude.toFloat(), longitude.toFloat(), altitued.toFloat()
-                    )
-                    Navigation.findNavController(view).navigate(action)
-                }
-
+            if (latitude == 0.0 && longitude == 0.0) {
+                val action = HomeFragmentDirections.actionHomeFragmentToQiblaFragment(
+                    address, date, CAIRO_LAT.toFloat(), CAIRO_LONG.toFloat(), altitued.toFloat()
+                )
+                Navigation.findNavController(view).navigate(action)
+            } else {
+                val action = HomeFragmentDirections.actionHomeFragmentToQiblaFragment(
+                    address, date, latitude.toFloat(), longitude.toFloat(), altitued.toFloat()
+                )
+                Navigation.findNavController(view).navigate(action)
             }
 
-
         }
-
     }
 
     private fun setViews() {

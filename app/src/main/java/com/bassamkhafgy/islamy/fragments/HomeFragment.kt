@@ -209,7 +209,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     isha
                 )
             )
-            viewModel.getRemainingTimeToNextPrayer(currentHour, prayTime.second)
+            viewModel.getRemainingTimeToNextPrayer(currentHour, prayTime.second,prayTime.first)
         }
 
     }

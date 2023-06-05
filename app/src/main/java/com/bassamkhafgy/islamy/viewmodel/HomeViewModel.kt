@@ -69,6 +69,9 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     private val _remainingTimeLiveData = MutableStateFlow("")
     val remainingTimeLiveData: StateFlow<String> = _remainingTimeLiveData
 
+    private val _nextAzanTimeLiveData = MutableStateFlow("")
+    val nextAzanTimeLiveData: StateFlow<String> = _nextAzanTimeLiveData
+
 
     init {
         getLocation()
@@ -204,7 +207,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     }
 
 
-    fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String) {
+    fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String, nextAzan: String) {
         viewModelScope.launch {
             val durationMillis = repository.getRemainingTimeToNextPrayer(currentTime, prayerTime)
 
@@ -214,16 +217,18 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
                     val minutes = millisUntilFinished / (1000 * 60) % 60
                     val hours = millisUntilFinished / (1000 * 60 * 60)
 
-                    val remainingTime = "Hour$hours: Minute:$minutes:"
+                    val remainingTime = "H:$hours\nM:$minutes"
                     viewModelScope.launch {
                         _remainingTimeLiveData.emit(remainingTime)
-
+                        _nextAzanTimeLiveData.emit(nextAzan)
                     }
                 }
 
                 override fun onFinish() {
                     viewModelScope.launch {
                         _remainingTimeLiveData.emit("0:0")
+                        _nextAzanTimeLiveData.emit("Prayer Now")
+
                     }
                 }
 

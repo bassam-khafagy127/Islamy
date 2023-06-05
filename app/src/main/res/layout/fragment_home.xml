@@ -135,7 +135,7 @@
                     android:id="@+id/nextPrayerTitleTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/isha_time"
+                    android:text="@{viewModel.nextAzanTimeLiveData}"
                     android:textAlignment="center"
                     android:textColor="@color/g_blueDark"
                     android:textSize="22sp"

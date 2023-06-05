@@ -9,10 +9,10 @@ import com.bassamkhafgy.islamy.data.local.LastLocation
 @Dao
 interface LocationDao {
     @Insert
-   suspend fun insertAddress(lastLocation: LastLocation)
+    suspend fun insertAddress(lastLocation: LastLocation)
 
     @Update
-  suspend  fun updateAddress(lastLocation: LastLocation)
+    suspend fun updateAddress(lastLocation: LastLocation)
 
     @Query("SELECT * FROM `last location`")
     fun getLastAddress(): List<LastLocation>

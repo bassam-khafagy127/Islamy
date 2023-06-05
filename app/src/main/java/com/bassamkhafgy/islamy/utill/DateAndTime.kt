@@ -1,12 +1,16 @@
 package com.bassamkhafgy.islamy.utill
 
 import android.text.format.Time
+import android.util.Log
+import com.bassamkhafgy.islamy.data.local.PrayerSchedule
+import com.bassamkhafgy.islamy.data.local.PrayerScheduleConverter
+import com.bassamkhafgy.islamy.data.local.utillmodels.PrayerTime
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
+import java.lang.Math.abs
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
-import kotlin.coroutines.coroutineContext
 
 private var _remainingTimeLiveData = MutableStateFlow("")
 
@@ -39,6 +43,7 @@ fun convertToApiDateFormat(inputDate: String): String {
     return outputFormat.format(date!!)
 }
 
+
 fun getPrayerRemainingTime(
     currentTime: String,
     prayerTime: String
@@ -63,4 +68,41 @@ fun getPrayerRemainingTime(
 
 
     return prayerTimeObj.toMillis(true) - currentTimeObj.toMillis(true)
+}
+
+fun calculateNextAzanTime(prayerTimes: PrayerScheduleConverter): Pair<String, String> {
+    val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+
+    val azanTimes = listOf(
+        "Fajr" to prayerTimes.fajr,
+        "Sunrise" to prayerTimes.sunrise,
+        "Dhuhr" to prayerTimes.dhuhr,
+        "Asr" to prayerTimes.asr,
+        "Maghrib" to prayerTimes.maghrib,
+        "Isha" to prayerTimes.isha
+    )
+
+    var nextAzanTime = ""
+    var nextAzanTitle = ""
+    var minTimeDifference = Int.MAX_VALUE
+
+    for (azanTime in azanTimes) {
+        val timeDifference = calculateMinuteDifference(currentTime, azanTime.second)
+        if (timeDifference in 1 until minTimeDifference) {
+            minTimeDifference = timeDifference
+            nextAzanTime = azanTime.second
+            nextAzanTitle = azanTime.first
+        }
+    }
+
+    return nextAzanTitle to nextAzanTime
+}
+
+private fun calculateMinuteDifference(time1: String, time2: String): Int {
+    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val date1 = timeFormat.parse(time1)
+    val date2 = timeFormat.parse(time2)
+
+    val differenceInMillis = date2.time - date1.time
+    return (differenceInMillis / (1000 * 60)).toInt()
 }

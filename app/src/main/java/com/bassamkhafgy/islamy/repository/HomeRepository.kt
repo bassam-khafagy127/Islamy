@@ -6,10 +6,12 @@ import android.location.Location
 import android.util.Log
 import com.bassamkhafgy.islamy.data.database.TimingsDataBase
 import com.bassamkhafgy.islamy.data.local.LastLocation
-import com.bassamkhafgy.islamy.data.local.TimeSchem
+import com.bassamkhafgy.islamy.data.local.PrayerSchedule
+import com.bassamkhafgy.islamy.data.local.PrayerScheduleConverter
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.networking.TimeApiService
 import com.bassamkhafgy.islamy.utill.Constants.ERROR_TAG
+import com.bassamkhafgy.islamy.utill.calculateNextAzanTime
 import com.bassamkhafgy.islamy.utill.getAddressGeocoder
 import com.bassamkhafgy.islamy.utill.getPrayerRemainingTime
 import com.bassamkhafgy.islamy.utill.getSystemCurrentTime
@@ -25,7 +27,7 @@ class HomeRepository @Inject constructor(
     private val timingsDataBase: TimingsDataBase
 ) {
     init {
-        getLocationCordination()
+        getLocationCoordination()
     }
 
     private val _location: Location = Location("")
@@ -53,7 +55,7 @@ class HomeRepository @Inject constructor(
     }
 
     @SuppressLint("MissingPermission")
-    fun getLocationCordination(): Location {
+    fun getLocationCoordination(): Location {
         val location = fusedLocationProviderClient.lastLocation
         location.addOnSuccessListener {
 
@@ -64,25 +66,24 @@ class HomeRepository @Inject constructor(
 
             }
         }.addOnFailureListener {
-//            Toast.makeText(requireContext(), "Error : ${it.message}", Toast.LENGTH_LONG).show()
             Log.e(ERROR_TAG, it.message.toString())
         }
         return _location
     }
 
-    suspend fun insertLastAddress(lastLocation: String) {
-        timingsDataBase.locationDao().insertAddress(LastLocation(0, lastLocation))
+    suspend fun insertLastAddress(lastLocation: LastLocation) {
+        timingsDataBase.locationDao().insertAddress(LastLocation(0, lastLocation.location))
     }
 
-    suspend fun insertToLocalPrayingTimes(time: TimeSchem) {
+    suspend fun insertToLocalPrayingTimes(time: PrayerSchedule) {
         timingsDataBase.timingsDao().insertTimings(time)
     }
 
-    suspend fun updateLastAddress(lastLocation: String) {
-        timingsDataBase.locationDao().updateAddress(LastLocation(0, lastLocation))
+    suspend fun updateLastAddress(lastLocation: LastLocation) {
+        timingsDataBase.locationDao().updateAddress(LastLocation(0, lastLocation.location))
     }
 
-    suspend fun updatePrayingTimes(lastPrayingTime: TimeSchem) {
+    suspend fun updatePrayingTimes(lastPrayingTime: PrayerSchedule) {
         timingsDataBase.timingsDao().updateTimings(lastPrayingTime)
     }
 
@@ -91,7 +92,7 @@ class HomeRepository @Inject constructor(
         return timingsDataBase.locationDao().getLastAddress()[size - 1].location
     }
 
-    fun getAllStoredTimings(): TimeSchem {
+    fun getAllStoredTimings(): PrayerSchedule {
         val size = timingsDataBase.timingsDao().getAllTimings().size
         return timingsDataBase.timingsDao().getAllTimings()[size - 1]
     }
@@ -103,4 +104,10 @@ class HomeRepository @Inject constructor(
     fun checkAddressesValues(): Int {
         return timingsDataBase.locationDao().isTableEmpty()
     }
+
+    fun getNextPrayerTimeR(prayerTime: PrayerScheduleConverter): Pair<String, String> {
+        return calculateNextAzanTime(prayerTime)
+    }
+
+
 }

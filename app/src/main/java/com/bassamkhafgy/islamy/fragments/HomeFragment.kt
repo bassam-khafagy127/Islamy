@@ -7,13 +7,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.bassamkhafgy.islamy.R
-import com.bassamkhafgy.islamy.data.local.TimeSchem
+import com.bassamkhafgy.islamy.data.local.LastLocation
+import com.bassamkhafgy.islamy.data.local.PrayerSchedule
+import com.bassamkhafgy.islamy.data.local.PrayerScheduleConverter
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
 import com.bassamkhafgy.islamy.utill.Constants.Location.CAIRO_LAT
@@ -24,6 +27,7 @@ import com.bassamkhafgy.islamy.utill.isInternetConnected
 import com.bassamkhafgy.islamy.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -68,12 +72,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        checkPermission()
-        viewModel.getRemainingTimeToNextPrayer(currentHour, "12:20")
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -101,22 +99,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
             }
 
-            lifecycleScope.launch {
-                viewModel.addressLiveData.collect { newAddress ->
-                    address = newAddress
-                    if (viewModel.checkAddressesValues() > 0) {
-                        launch(Dispatchers.IO) {
-                            Log.d("DATABASETEST", "BIGER")
-                            viewModel.updateLastAddress(newAddress)
-                        }
-                    } else {
-                       lifecycleScope.launch {
-                           Log.d("DATABASETEST", "Smailler")
-                           viewModel.insertLastAddress(newAddress)
-                       }
-                    }
-                }
-            }
 
             //Prayer Times
             lifecycleScope.launch(Dispatchers.IO) {
@@ -142,28 +124,25 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
             }
             lifecycleScope.launch(Dispatchers.IO) {
-                val timings = TimeSchem(0, fagr, sunrise, duhr, asr, magribe, isha)
-                fagr = timings.fagr
+                val timings = PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha)
+                fagr = timings.fajr
                 sunrise = timings.sunrise
-                duhr = timings.duhr
+                duhr = timings.dhuhr
                 asr = timings.asr
-                magribe = timings.magribe
+                magribe = timings.maghrib
                 isha = timings.isha
                 viewModel.updateLocalTimings(timings)
             }
-            lifecycleScope.launch(Dispatchers.IO) {
-                val lastAddress = address
-                viewModel.updateLastAddress(lastAddress)
-            }
+
         } else {
 
             lifecycleScope.launch(Dispatchers.IO) {
                 val timings = viewModel.getStoredTimings()
-                fagr = timings.fagr
+                fagr = timings.fajr
                 sunrise = timings.sunrise
-                duhr = timings.duhr
+                duhr = timings.dhuhr
                 asr = timings.asr
-                magribe = timings.magribe
+                magribe = timings.maghrib
                 isha = timings.isha
             }
         }
@@ -184,7 +163,27 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         binding.settingBtn.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
-                val timings = TimeSchem(0, fagr, sunrise, duhr, asr, magribe, isha)
+                viewModel.addressLiveData.collect { newAddress ->
+                    address = newAddress.location
+                    launch(Dispatchers.Main) {
+                        Toast.makeText(
+                            requireContext(),
+                            "DATABASETEST${newAddress.location}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    if (viewModel.checkAddressesValues() > 0) {
+                        Log.d("DATABASETEST", "BIGER")
+                        viewModel.updateLastAddress(LastLocation(0, address))
+
+                    } else {
+                        Log.d("DATABASETEST", "Smailler")
+                        viewModel.insertLastAddress(newAddress)
+                    }
+                }
+            }
+            lifecycleScope.launch(Dispatchers.IO) {
+                val timings = PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha)
                 if (viewModel.checkPrayingTimeValues() > 0) {
                     Log.d("DATABASETEST", "BIGER")
                     viewModel.updateLocalTimings(timings)
@@ -197,6 +196,21 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         setViews()
         addCallbacks(view)
+        lifecycleScope.launch {
+            delay(2000)
+            Toast.makeText(requireContext(), "Fagr:$fagr", Toast.LENGTH_LONG).show()
+            val prayTime = viewModel.getNextPrayerTimeV(
+                PrayerScheduleConverter(
+                    fagr,
+                    sunrise,
+                    duhr,
+                    asr,
+                    magribe,
+                    isha
+                )
+            )
+            viewModel.getRemainingTimeToNextPrayer(currentHour, prayTime.second)
+        }
 
     }
 

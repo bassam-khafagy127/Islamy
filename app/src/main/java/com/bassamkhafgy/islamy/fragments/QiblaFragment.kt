@@ -78,7 +78,8 @@ class QiblaFragment : Fragment(R.layout.fragment_qibla), SensorEventListener {
         }
 
         binding.searchForNewCityTv.setOnClickListener {
-            val action = QiblaFragmentDirections.actionQiblaFragmentToSearchFragment()
+            val action =
+                QiblaFragmentDirections.actionQiblaFragmentToSearchFragment("", "", "", "", "", "")
             Navigation.findNavController(view).navigate(action)
         }
 

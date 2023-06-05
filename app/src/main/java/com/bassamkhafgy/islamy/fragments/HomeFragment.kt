@@ -241,40 +241,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
 
         //Updating Database
-//        binding.settingBtn.setOnClickListener {
-//            lifecycleScope.launch(Dispatchers.IO) {
-//                viewModel.addressLiveData.collect { newAddress ->
-//                    address = newAddress.location
-//                    launch(Dispatchers.Main) {
-//                        Toast.makeText(
-//                            requireContext(),
-//                            "DATABASETEST${newAddress.location}",
-//                            Toast.LENGTH_LONG
-//                        ).show()
-//                    }
-//                    if (viewModel.checkAddressesValues() > 0) {
-//                        Log.d("DATABASETEST", "BIGER")
-//                        viewModel.updateLastAddress(LastLocation(0, address))
-//
-//                    } else {
-//                        Log.d("DATABASETEST", "Smailler")
-//                        viewModel.insertLastAddress(newAddress)
-//                    }
-//                }
-//            }
-//            lifecycleScope.launch(Dispatchers.IO) {
-//                val timings =
-//                    PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha, address)
-//                if (viewModel.checkPrayingTimeValues() > 0) {
-//                    Log.d("DATABASETEST", "BIGER")
-//                    viewModel.updateLocalTimings(timings)
-//
-//                } else {
-//                    Log.d("DATABASETEST", "Smailler")
-//                    viewModel.insertLocalTimings(timings)
-//                }
-//            }
-//        }
+        binding.settingBtn.setOnClickListener {
+            val action =HomeFragmentDirections.actionHomeFragmentToSplashFragment()
+            Navigation.findNavController(view).navigate(action)
+
+        }
+        binding.topLocationBtn.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment(
+                fagr,
+                sunrise,
+                duhr,
+                asr,
+                magribe,
+                isha
+            )
+            Navigation.findNavController(view).navigate(action)
+        }
         setViews()
     }
 

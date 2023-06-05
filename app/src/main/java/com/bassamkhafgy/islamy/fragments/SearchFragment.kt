@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import com.bassamkhafgy.islamy.R
 import com.bassamkhafgy.islamy.databinding.FragmentSearchBinding
 import com.bassamkhafgy.islamy.viewmodel.SearchViewModel
@@ -27,6 +28,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private lateinit var binding: FragmentSearchBinding
     private val viewModel by viewModels<SearchViewModel>()
+    private val searchArgs: SearchFragmentArgs by navArgs()
 
 
     override fun onCreateView(
@@ -36,11 +38,20 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     ): View? {
         binding = FragmentSearchBinding.inflate(layoutInflater)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.apply {
+            binding.fagrTextView.text = searchArgs.fagrArgs
+            binding.shroukTextView.text = searchArgs.sunrisArgs
+            binding.zohrCardTextView.text = searchArgs.duhrArgs
+            binding.asrCardTextView.text = searchArgs.asrArgs
+            binding.magrebTextView.text = searchArgs.magribrArgs
+            binding.ishaTextView.text = searchArgs.ishaArgs
+
+
+        }
 
         binding.searchBTN.setOnClickListener {
             getTimings()

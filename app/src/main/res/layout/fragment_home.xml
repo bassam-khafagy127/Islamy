@@ -462,7 +462,7 @@
         </androidx.cardview.widget.CardView>
 
         <TextView
-            android:id="@+id/topLocationTV"
+            android:id="@+id/topLocationBtn"
             style="@style/whiteButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -490,9 +490,9 @@
             android:minWidth="35dp"
             android:minHeight="35dp"
             android:src="@drawable/setting_ic"
-            app:layout_constraintBottom_toBottomOf="@id/topLocationTV"
+            app:layout_constraintBottom_toBottomOf="@id/topLocationBtn"
             app:layout_constraintEnd_toStartOf="@id/rightHomeGuideLine"
-            app:layout_constraintTop_toTopOf="@id/topLocationTV" />
+            app:layout_constraintTop_toTopOf="@id/topLocationBtn" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

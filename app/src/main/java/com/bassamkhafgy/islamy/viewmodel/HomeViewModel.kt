@@ -125,8 +125,27 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
                 _remoteIshaLiveData.emit(isha)
                 _addressLiveData.emit(LastLocation(0, address))
 
+                launch (Dispatchers.IO){
+                    val prayTimes =
+                        PrayerSchedule(
+                            0,
+                            fagr,
+                            sunrise,
+                            duhr,
+                            asr,
+                            magribe,
+                            isha,
+                            address
+                        )
+
+                    if (checkPrayingTimeValues() > 0) {
+                        repository.updatePrayingTimes(prayTimes)
+                    } else {
+                        repository.insertToLocalPrayingTimes(prayTimes)
+                    }
+                }
             } else {
-//                response IsFaild
+//                response Is Failed
                 viewModelScope.launch(Dispatchers.IO) {
                     //getFromDAtaBase
                     fagr = repository.getAllStoredTimings().fajr
@@ -144,6 +163,8 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
                 _remoteAsrLiveData.emit(asr)
                 _remoteMagribeLiveData.emit(magribe)
                 _addressLiveData.emit(LastLocation(0, address))
+
+
             }
 
         }
@@ -266,24 +287,22 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     }
 
 
-    //get REmote NextDay
-    fun getNextPrayerTurnWithConnection(prayerSchedule: PrayerSchedule) {
-
-    }
-
-
-    //get Remote lastDay
-    fun getLastPrayerTurnWithoutConnection() {
-
-    }
-
-
     //getNextAzanValue
     fun getNextPrayerTimeTitle(prayerTime: PrayerScheduleConverter): Pair<String, String> {
-        val e=repository.getNextPrayerTimeTitle(prayerTime)
-        Log.d(ERROR_TAG + "eeee:",e.second)
+        val e = repository.getNextPrayerTimeTitle(prayerTime)
+        Log.d(ERROR_TAG + "eeee:", e.second)
         return repository.getNextPrayerTimeTitle(prayerTime)
     }
 }
 
-//Repos Problem
+//
+//    //get REmote NextDay
+//    fun getNextPrayerTurnWithConnection(prayerSchedule: PrayerSchedule) {
+//
+//    }
+//
+//
+//    //get Remote lastDay
+//    fun getLastPrayerTurnWithoutConnection() {
+//
+//    }

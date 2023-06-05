@@ -394,6 +394,7 @@
             app:layout_constraintTop_toBottomOf="@id/topSearchGuideLine" />
 
         <EditText
+            android:textAlignment="center"
             android:id="@+id/AddressTypingEd"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

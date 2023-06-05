@@ -21,6 +21,8 @@ private var magribe = ""
 private var isha = ""
 private var address = ""
 
+private var hijriDate = ""
+
 private val _remoteFagrLiveData = MutableStateFlow("")
 val remoteFagrLiveData: StateFlow<String> = _remoteFagrLiveData
 
@@ -42,6 +44,7 @@ val remoteIshaLiveData: StateFlow<String> = _remoteIshaLiveData
 private val _addressLiveData = MutableStateFlow(LastLocation(0, ""))
 val addressLiveData: StateFlow<LastLocation> = _addressLiveData
 
+
 @HiltViewModel
 class SearchViewModel @Inject constructor(private val repository: SearchRepository) : ViewModel() {
     fun getTodayRemoteTimings(day: String, latitude: String, longitude: String) {
@@ -58,7 +61,7 @@ class SearchViewModel @Inject constructor(private val repository: SearchReposito
                 isha = convertTo12HourFormat("${timings.body()?.data?.timings?.isha}")
                 address =
                     repository.getAddress(latitude.toDouble(), longitude.toDouble()).toString()
-
+                hijriDate = "${timings.body()?.data?.date?.hijri?.date}"
 //                Emitresponse value PrayerTimes
                 _remoteFagrLiveData.emit(fagr)
                 _remoteSunriseLiveData.emit(sunrise)

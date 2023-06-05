@@ -74,77 +74,20 @@
                 android:layout_height="match_parent"
                 android:padding="16dp">
 
-                <LinearLayout
-                    android:id="@+id/hijriLayoout"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/miladyDate"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toTopOf="@id/miladi_Layout"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:id="@+id/dateTV"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textAlignment="textStart"
-                        android:textColor="@color/g_blueDark"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:text="@string/hijri_date" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:singleLine="true"
-                        android:text="@string/dummyDate"
-                        android:textAlignment="center"
-                        android:textColor="@color/g_blueDark"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/miladi_Layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:orientation="horizontal"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:text="@string/dummyDate"
+                    android:textAlignment="center"
+                    android:textColor="@color/g_blueDark"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@id/addressTV"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/hijriLayoout">
-
-                    <TextView
-                        android:id="@+id/miladidateTV"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:singleLine="true"
-                        android:textAlignment="textStart"
-                        android:textColor="@color/g_blueDark"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:layout_editor_absoluteX="40dp"
-                        tools:text="@string/miladiDate" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:singleLine="true"
-                        android:text="25/5/2023"
-                        android:textAlignment="center"
-                        android:textColor="@color/g_blueDark"
-                        android:textStyle="bold"
-
-                        tools:text="@string/dummyDate" />
-                </LinearLayout>
-
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/addressTV"
@@ -160,7 +103,7 @@
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/miladi_Layout" />
+                    app:layout_constraintTop_toBottomOf="@id/miladyDate" />
 
                 <View
                     android:id="@+id/topPrayerTimeGuideLineView"

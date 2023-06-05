@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.bassamkhafgy.islamy.R
 import com.bassamkhafgy.islamy.databinding.FragmentSearchBinding
 import com.bassamkhafgy.islamy.viewmodel.SearchViewModel
+import com.bassamkhafgy.islamy.viewmodel.addressLiveData
 import com.bassamkhafgy.islamy.viewmodel.remoteAsrLiveData
 import com.bassamkhafgy.islamy.viewmodel.remoteDuhrLiveData
 import com.bassamkhafgy.islamy.viewmodel.remoteFagrLiveData
@@ -19,7 +20,6 @@ import com.bassamkhafgy.islamy.viewmodel.remoteIshaLiveData
 import com.bassamkhafgy.islamy.viewmodel.remoteMagribeLiveData
 import com.bassamkhafgy.islamy.viewmodel.remoteSunriseLiveData
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -28,13 +28,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     private lateinit var binding: FragmentSearchBinding
     private val viewModel by viewModels<SearchViewModel>()
 
-    private var fagr = ""
-    private var sunrise = ""
-    private var duhr = ""
-    private var asr = ""
-    private var magribe = ""
-    private var isha = ""
-    private var address = ""
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -54,35 +48,42 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
         lifecycleScope.launch {
             remoteFagrLiveData.collect {
-                fagr = it
-                binding.fagrTextView.text = "$it GFGF"
+                binding.fagrTextView.text = it
             }
 
         }
         lifecycleScope.launch {
             remoteSunriseLiveData.collect {
-                sunrise = it
+                binding.shroukTextView.text = it
             }
         }
         lifecycleScope.launch {
             remoteDuhrLiveData.collect {
-                duhr = it
+                binding.zohrCardTextView.text = it
             }
         }
         lifecycleScope.launch {
             remoteAsrLiveData.collect {
-                asr = it
+                binding.asrCardTextView.text = it
             }
         }
         lifecycleScope.launch {
             remoteMagribeLiveData.collect {
-                magribe = it
+                binding.magrebTextView.text = it
             }
         }
         lifecycleScope.launch {
             remoteIshaLiveData.collect {
-                isha = it
+                binding.ishaTextView.text = it
             }
+        }
+        lifecycleScope.launch {
+            addressLiveData.collect {
+                binding.addressTV.text = it.location
+            }
+        }
+        lifecycleScope.launch {
+            binding.miladyDate.text = viewModel.getDay()
         }
 
     }

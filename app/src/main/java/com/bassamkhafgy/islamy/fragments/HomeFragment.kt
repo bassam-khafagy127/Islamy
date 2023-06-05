@@ -57,6 +57,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        checkPermission()
         viewModel.getLocation()
     }
 
@@ -78,8 +79,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         if (isInternetConnected(requireContext())) {
             //InterNetAvailable
 
-
-            //get Remote TodayTimings
+            //get Remote TodayTimings and handle Data
             lifecycleScope.launch(Dispatchers.Main) {
                 //get Cairo TodayTimings
                 if (latitude == 0.0 && longitude == 0.0) {
@@ -150,6 +150,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         } else {
             //NoInternetConnection GetLocalData
+
+            //get Local TodayTimings and handle Data
+            lifecycleScope.launch(Dispatchers.Main) {
+                //get Cairo TodayTimings
+                if (latitude == 0.0 && longitude == 0.0) {
+
+                    viewModel.getAddress(CAIRO_LAT, CAIRO_LONG)
+                } else {
+                    viewModel.getAddress(latitude, longitude)
+                }
+            }
+
             lifecycleScope.launch(Dispatchers.IO) {
                 val timings = viewModel.getStoredTimings()
                 fagr = timings.fajr
@@ -228,39 +240,40 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
 
         //Updating Database
-        binding.settingBtn.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                viewModel.addressLiveData.collect { newAddress ->
-                    address = newAddress.location
-                    launch(Dispatchers.Main) {
-                        Toast.makeText(
-                            requireContext(),
-                            "DATABASETEST${newAddress.location}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                    if (viewModel.checkAddressesValues() > 0) {
-                        Log.d("DATABASETEST", "BIGER")
-                        viewModel.updateLastAddress(LastLocation(0, address))
-
-                    } else {
-                        Log.d("DATABASETEST", "Smailler")
-                        viewModel.insertLastAddress(newAddress)
-                    }
-                }
-            }
-            lifecycleScope.launch(Dispatchers.IO) {
-                val timings = PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha, address)
-                if (viewModel.checkPrayingTimeValues() > 0) {
-                    Log.d("DATABASETEST", "BIGER")
-                    viewModel.updateLocalTimings(timings)
-
-                } else {
-                    Log.d("DATABASETEST", "Smailler")
-                    viewModel.insertLocalTimings(timings)
-                }
-            }
-        }
+//        binding.settingBtn.setOnClickListener {
+//            lifecycleScope.launch(Dispatchers.IO) {
+//                viewModel.addressLiveData.collect { newAddress ->
+//                    address = newAddress.location
+//                    launch(Dispatchers.Main) {
+//                        Toast.makeText(
+//                            requireContext(),
+//                            "DATABASETEST${newAddress.location}",
+//                            Toast.LENGTH_LONG
+//                        ).show()
+//                    }
+//                    if (viewModel.checkAddressesValues() > 0) {
+//                        Log.d("DATABASETEST", "BIGER")
+//                        viewModel.updateLastAddress(LastLocation(0, address))
+//
+//                    } else {
+//                        Log.d("DATABASETEST", "Smailler")
+//                        viewModel.insertLastAddress(newAddress)
+//                    }
+//                }
+//            }
+//            lifecycleScope.launch(Dispatchers.IO) {
+//                val timings =
+//                    PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha, address)
+//                if (viewModel.checkPrayingTimeValues() > 0) {
+//                    Log.d("DATABASETEST", "BIGER")
+//                    viewModel.updateLocalTimings(timings)
+//
+//                } else {
+//                    Log.d("DATABASETEST", "Smailler")
+//                    viewModel.insertLocalTimings(timings)
+//                }
+//            }
+//        }
         setViews()
     }
 
@@ -292,6 +305,40 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.addressLiveData.collect { newAddress ->
+                address = newAddress.location
+                launch(Dispatchers.Main) {
+                    Toast.makeText(
+                        requireContext(),
+                        "DATABASETEST${newAddress.location}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                if (viewModel.checkAddressesValues() > 0) {
+                    Log.d("DATABASETEST22", "BIGER")
+                    viewModel.updateLastAddress(LastLocation(0, address))
 
+                } else {
+                    Log.d("DATABASETEST2", "Smailler")
+                    viewModel.insertLastAddress(newAddress)
+                }
+            }
+        }
+        lifecycleScope.launch(Dispatchers.IO) {
+            val timings =
+                PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha, address)
+            if (viewModel.checkPrayingTimeValues() > 0) {
+                Log.d("DATABASETEST1", "BIGER")
+                viewModel.updateLocalTimings(timings)
+
+            } else {
+                Log.d("DATABASETEST11", "Smailler")
+                viewModel.insertLocalTimings(timings)
+            }
+        }
+    }
 }
 

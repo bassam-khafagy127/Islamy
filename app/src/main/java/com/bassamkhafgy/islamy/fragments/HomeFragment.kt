@@ -76,8 +76,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setViews()
-        addCallback(view)
 
         if (isInternetConnected(requireContext())) {
             //InterNetAvailable
@@ -97,6 +95,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     )
                     viewModel.getAddress(latitude, longitude)
                 }
+
             }
 
             //RemainingTimeLiveData
@@ -136,6 +135,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             lifecycleScope.launch(Dispatchers.IO) {
                 viewModel.remoteIshaLiveData.collect { newValue -> isha = newValue }
 
+            }
+
+            //UpdateLocalTimings
+            lifecycleScope.launch(Dispatchers.IO) {
+                delay(2000)
+                Log.d("LOCALTIMINGS", "$fagr:D")
+                val timings = PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha, address)
+                fagr = timings.fajr
+                sunrise = timings.sunrise
+                duhr = timings.dhuhr
+                asr = timings.asr
+                magribe = timings.maghrib
+                isha = timings.isha
+                Log.d("TTTTT", fagr)
             }
 
         } else {
@@ -194,6 +207,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 currentHour = it
             }
         }
+
+
         //nextPrayTimeLiveData
         lifecycleScope.launch {
             delay(2000)
@@ -207,47 +222,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     isha
                 )
             )
-            viewModel.getRemainingTimeToNextPrayer(currentHour, prayTime.second, prayTime.first)
-
-        }
-
-    }
-
-    //praying times textview
-    private fun setViews() {
-        binding.apply {
-            fagrTextView.text = fagr
-            shroukTextView.text = sunrise
-            zohrCardTextView.text = duhr
-            asrCardTextView.text = asr
-            magrebTextView.text = magribe
-            ishaTextView.text = isha
-            addressTV.text = address
-            dateTV.text = date
-        }
-    }
+            Log.d("TTTTT:Fragment", prayTime.second + prayTime.first)
+            viewModel.getRemainingTimeToNextPrayer(currentHour, "12:5", "fagr")
 
 
-    //addUICallbacks
-    private fun addCallback(view: View) {
-
-        binding.settingBtn.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToSplashFragment()
-            Navigation.findNavController(view).navigate(action)
-
-        }
-
-        //search screen
-        binding.topLocationBtn.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment(
-                fagr,
-                sunrise,
-                duhr,
-                asr,
-                magribe,
-                isha
-            )
-            Navigation.findNavController(view).navigate(action)
         }
 
         //goto Qibla Fragment
@@ -266,9 +244,24 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
 
         }
+
+        setViews()
+        addCallback(view)
     }
 
-    //Location and internet
+    private fun setViews() {
+        binding.apply {
+            fagrTextView.text = fagr
+            shroukTextView.text = sunrise
+            zohrCardTextView.text = duhr
+            asrCardTextView.text = asr
+            magrebTextView.text = magribe
+            ishaTextView.text = isha
+            addressTV.text = address
+            dateTV.text = date
+        }
+    }
+
     private fun checkPermission() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
@@ -284,6 +277,23 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
+    private fun addCallback(view: View) {
 
+        binding.settingBtn.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeFragmentToSplashFragment()
+            Navigation.findNavController(view).navigate(action)
+
+        }
+        binding.topLocationBtn.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment(
+                fagr,
+                sunrise,
+                duhr,
+                asr,
+                magribe,
+                isha
+            )
+            Navigation.findNavController(view).navigate(action)
+        }
+    }
 }
-

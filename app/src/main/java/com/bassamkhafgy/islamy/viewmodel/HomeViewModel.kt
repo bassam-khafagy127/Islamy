@@ -204,38 +204,6 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
 
     }
 
-
-    //DataBase isert Today Timings
-    suspend fun insertLocalTimings(time: PrayerSchedule) {
-        repository.insertToLocalPrayingTimes(time)
-    }
-
-    //DataBase insert today Address
-    fun insertLastAddress(lastLocation: LastLocation) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.insertLastAddress(lastLocation)
-        }
-    }
-
-    //DataBase update today Address
-    suspend fun updateLastAddress(lastLocation: LastLocation) {
-        repository.updateLastAddress(lastLocation)
-    }
-
-
-    //DataBase update Today Timing
-    suspend fun updateLocalTimings(prayingTime: PrayerSchedule) {
-        repository.updatePrayingTimes(prayingTime)
-    }
-
-
-    //DataBase get Today address
-    fun getLastAddress() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _lastAddressLiveData.send(LastLocation(0, repository.getLocalLastAddress()))
-        }
-    }
-
     fun getAllPrayingTimes() {
         viewModelScope.launch(Dispatchers.IO) {
             _prayingTimesLiveData.send(repository.getAllStoredTimings())
@@ -277,12 +245,10 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     }
 
     //Check AddressValue in DataBase
-    fun checkAddressesValues(): Int {
-        return repository.checkAddressesValues()
-    }
+
 
     //DataBase checkPrayingTimeValues Today isnot null
-    fun checkPrayingTimeValues(): Int {
+    private fun checkPrayingTimeValues(): Int {
         return repository.checkPrayingTimeValues()
     }
 

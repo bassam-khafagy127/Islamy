@@ -84,26 +84,16 @@ class HomeRepository @Inject constructor(
         return _location
     }
 
-    suspend fun insertLastAddress(lastLocation: LastLocation) {
-        timingsDataBase.locationDao().insertAddress(LastLocation(0, lastLocation.location))
-    }
 
     suspend fun insertToLocalPrayingTimes(time: PrayerSchedule) {
         timingsDataBase.timingsDao().insertTimings(time)
     }
 
-    suspend fun updateLastAddress(lastLocation: LastLocation) {
-        timingsDataBase.locationDao().updateAddress(LastLocation(0, lastLocation.location))
-    }
 
     suspend fun updatePrayingTimes(lastPrayingTime: PrayerSchedule) {
         timingsDataBase.timingsDao().updateTimings(lastPrayingTime)
     }
 
-    fun getLocalLastAddress(): String {
-        val size = timingsDataBase.locationDao().getLastAddress().size
-        return timingsDataBase.locationDao().getLastAddress()[size - 1].location
-    }
 
     //getStoredTime
     fun getAllStoredTimings(): PrayerSchedule {
@@ -113,10 +103,6 @@ class HomeRepository @Inject constructor(
 
     fun checkPrayingTimeValues(): Int {
         return timingsDataBase.timingsDao().isTableEmpty()
-    }
-
-    fun checkAddressesValues(): Int {
-        return timingsDataBase.locationDao().isTableEmpty()
     }
 
 

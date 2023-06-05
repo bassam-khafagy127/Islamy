@@ -69,7 +69,6 @@ fun getPrayerRemainingTime(
 
 fun calculateNextAzanTime(prayerTimes: PrayerScheduleConverter): Pair<String, String> {
     val currentTime = SimpleDateFormat("hh:mm", Locale.ENGLISH).format(Date())
-
     val sdf = SimpleDateFormat("hh:mm", Locale.ENGLISH)
     val azanTimes = listOf(
         "Fajr" to prayerTimes.fajr,
@@ -99,10 +98,20 @@ fun calculateNextAzanTime(prayerTimes: PrayerScheduleConverter): Pair<String, St
 }
 
 fun calculateMinuteDifference(time1: String, time2: String): Int {
-    val timeFormat = SimpleDateFormat("hh:mm", Locale.ENGLISH)
+    val timeFormat = SimpleDateFormat("hh:mm", Locale.getDefault())
     val date1 = timeFormat.parse(time1)
     val date2 = timeFormat.parse(time2)
 
-    val differenceInMillis = date2.time - date1.time
+    val calendar1 = Calendar.getInstance()
+    val calendar2 = Calendar.getInstance()
+    calendar1.time = date1
+    calendar2.time = date2
+
+    // Check if the hour is 12 for time2 and adjust the calendar accordingly
+    if (calendar2.get(Calendar.HOUR) == 12 && calendar2.get(Calendar.AM_PM) == Calendar.AM) {
+        calendar2.set(Calendar.HOUR, 0)
+    }
+
+    val differenceInMillis = calendar2.timeInMillis - calendar1.timeInMillis
     return (differenceInMillis / (1000 * 60)).toInt()
 }

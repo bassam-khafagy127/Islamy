@@ -2,7 +2,6 @@ package com.bassamkhafgy.islamy.viewmodel
 
 import android.location.Location
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bassamkhafgy.islamy.data.local.LastLocation
@@ -30,6 +29,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     private var asr = ""
     private var magribe = ""
     private var isha = ""
+    private var address = ""
 
 
     private val _prayingTimesLiveData = Channel<PrayerSchedule>()
@@ -77,6 +77,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         getLocation()
     }
 
+    //getCurrentHour FromSystem
     fun getCurrentHour() {
         viewModelScope.launch {
             _currentHourLiveData.emit(
@@ -87,7 +88,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
 
     //Stable
 
-
+    //getAddressFromGeoCoder
     fun getAddress(latitude: Double, longitude: Double) {
         viewModelScope.launch(Dispatchers.IO) {
             _addressLiveData.emit(
@@ -96,12 +97,12 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         }
     }
 
-    fun getTimings(day: String, latitude: String, longitude: String) {
+    //getTodayTimingsFromApi
+    fun getTodayRemoteTimings(day: String, latitude: String, longitude: String) {
         viewModelScope.launch {
 
-            val timings: Response<TimeResponse> = repository.getTimings(day, latitude, longitude)
-
-            val currentLocation: LastLocation
+            val timings: Response<TimeResponse> =
+                repository.getTodayTimings(day, latitude, longitude)
             if (timings.isSuccessful) {
                 fagr = convertTo12HourFormat("${timings.body()?.data?.timings?.fajr}")
                 sunrise = convertTo12HourFormat("${timings.body()?.data?.timings?.sunrise}")
@@ -109,25 +110,29 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
                 asr = convertTo12HourFormat("${timings.body()?.data?.timings?.asr}")
                 magribe = convertTo12HourFormat("${timings.body()?.data?.timings?.maghrib}")
                 isha = convertTo12HourFormat("${timings.body()?.data?.timings?.isha}")
+                address =
+                    repository.getAddress(latitude.toDouble(), longitude.toDouble()).toString()
 
-                //Emit PrayerTimes
+                //Emitresponse value PrayerTimes
                 _remoteFagrLiveData.emit(fagr)
                 _remoteSunriseLiveData.emit(sunrise)
                 _remoteDuhrLiveData.emit(duhr)
                 _remoteAsrLiveData.emit(asr)
                 _remoteMagribeLiveData.emit(magribe)
                 _remoteIshaLiveData.emit(isha)
+                _addressLiveData.emit(LastLocation(0, address))
 
             } else {
-
+//                response IsFaild
                 viewModelScope.launch(Dispatchers.IO) {
+                    //getFromDAtaBase
                     fagr = repository.getAllStoredTimings().fajr
                     sunrise = repository.getAllStoredTimings().sunrise
                     duhr = repository.getAllStoredTimings().dhuhr
                     asr = repository.getAllStoredTimings().asr
                     magribe = repository.getAllStoredTimings().maghrib
                     fagr = repository.getAllStoredTimings().isha
-
+                    address = repository.getAllStoredTimings().address
                 }
                 //Emit PrayerTimes
                 _remoteFagrLiveData.emit(fagr)
@@ -135,7 +140,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
                 _remoteDuhrLiveData.emit(duhr)
                 _remoteAsrLiveData.emit(asr)
                 _remoteMagribeLiveData.emit(magribe)
-                _remoteIshaLiveData.emit(isha)
+                _addressLiveData.emit(LastLocation(0, address))
             }
 
         }
@@ -145,16 +150,16 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         val location = repository.getLocationCoordination()
         viewModelScope.launch {
             _locationLiveData.emit(location)
-            Log.d("DATABASETEST", location.latitude.toString())
         }
         return location
     }
 
+    //DateFromSystem
     fun getDate(): String {
         return repository.getDate()
     }
 
-
+    //localDataBaseTodayTimings
     fun getStoredTimings(): PrayerSchedule {
         fagr = repository.getAllStoredTimings().fajr
         sunrise = repository.getAllStoredTimings().sunrise
@@ -171,32 +176,38 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
             _remoteMagribeLiveData.emit(magribe)
             _remoteIshaLiveData.emit(isha)
         }
-        return PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha)
+        return PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha, "")
 
     }
 
 
+    //DataBase isert Today Timings
     suspend fun insertLocalTimings(time: PrayerSchedule) {
         repository.insertToLocalPrayingTimes(time)
     }
 
+    //DataBase insert today Address
     fun insertLastAddress(lastLocation: LastLocation) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.insertLastAddress(lastLocation)
         }
     }
 
+    //DataBase update today Address
     suspend fun updateLastAddress(lastLocation: LastLocation) {
         repository.updateLastAddress(lastLocation)
     }
 
+
+    //DataBase update Today Timing
     suspend fun updateLocalTimings(prayingTime: PrayerSchedule) {
         repository.updatePrayingTimes(prayingTime)
     }
 
+    //DataBase get Today address
     fun getLastAddress() {
         viewModelScope.launch(Dispatchers.IO) {
-            _lastAddressLiveData.send(LastLocation(0, repository.getLastAddress()))
+            _lastAddressLiveData.send(LastLocation(0, repository.getLocalLastAddress()))
         }
     }
 
@@ -206,7 +217,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         }
     }
 
-
+    //Get Remaining Time And Next Azan
     fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String, nextAzan: String) {
         viewModelScope.launch {
             val durationMillis = repository.getRemainingTimeToNextPrayer(currentTime, prayerTime)
@@ -237,22 +248,28 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         }
     }
 
+    //Check AddressValue in DataBase
     fun checkAddressesValues(): Int {
         return repository.checkAddressesValues()
     }
 
+    //DataBase checkPrayingTimeValues Today isnot null
     fun checkPrayingTimeValues(): Int {
         return repository.checkPrayingTimeValues()
     }
 
+    //get REmote NextDay
     fun getNextPrayerTurnWithConnection(prayerSchedule: PrayerSchedule) {
-//
-    }
-
-    fun getNextPrayerTurnWithoutConnection() {
 
     }
 
+    //get Remote lastDay
+    fun getLastPrayerTurnWithoutConnection() {
+
+    }
+
+
+    //getNextAzanValue
     fun getNextPrayerTimeV(prayerTime: PrayerScheduleConverter): Pair<String, String> {
         return repository.getNextPrayerTimeR(prayerTime)
     }

@@ -42,6 +42,12 @@ fun convertToApiDateFormat(inputDate: String): String {
     val date = inputFormat.parse(inputDate)
     return outputFormat.format(date!!)
 }
+fun convertResponseDateFormat(inputDate: String): String {
+    val inputFormat = SimpleDateFormat("yyyy, MMMM d", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("d-M-yyyy", Locale.ENGLISH)
+    val date = inputFormat.parse(inputDate)
+    return outputFormat.format(date!!)
+}
 
 
 fun getPrayerRemainingTime(

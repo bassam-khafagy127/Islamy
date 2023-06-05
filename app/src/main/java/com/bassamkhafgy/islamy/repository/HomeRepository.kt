@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.util.Log
-import com.bassamkhafgy.islamy.data.database.TimingsDataBase
+import com.bassamkhafgy.islamy.data.database.IslamyAppDataBase
 import com.bassamkhafgy.islamy.data.local.LastLocation
 import com.bassamkhafgy.islamy.data.local.PrayerSchedule
 import com.bassamkhafgy.islamy.data.local.PrayerScheduleConverter
@@ -24,7 +24,7 @@ class HomeRepository @Inject constructor(
     private val context: Context,
     private var fusedLocationProviderClient: FusedLocationProviderClient,
     private val timeApiService: TimeApiService,
-    private val timingsDataBase: TimingsDataBase
+    private val timingsDataBase: IslamyAppDataBase
 ) {
     init {
         getLocationCoordination()
@@ -32,7 +32,7 @@ class HomeRepository @Inject constructor(
 
     private val _location: Location = Location("")
 
-    suspend fun getTimings(
+    suspend fun getTodayTimings(
         day: String,
         latitude: String,
         longitude: String
@@ -40,20 +40,35 @@ class HomeRepository @Inject constructor(
         return timeApiService.getPrayerTimes(day, latitude, longitude)
     }
 
+//    getRemoteNextLastDayTimings
+//    suspend fun getTimingsForNextDay(
+//        day: String,
+//        latitude: String,
+//        longitude: String
+//    ): Response<TimeResponse> {
+//        return timeApiService.getPrayerTimes(day, latitude, longitude)
+//    }
+
+
+    //    getGeoAddress
     fun getAddress(latitude: Double, longitude: Double): String? {
         return getAddressGeocoder(context, latitude, longitude)
     }
 
+    //    getSystemDate
     fun getDate() = getSystemDate()
 
+    //getSystemTime
     fun getCurrentHour(): String {
         return getSystemCurrentTime()
     }
 
+    //Get Remaining Time And Next Azan
     fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String): Long {
         return getPrayerRemainingTime(currentTime, prayerTime)
     }
 
+    //getLocation witGPs
     @SuppressLint("MissingPermission")
     fun getLocationCoordination(): Location {
         val location = fusedLocationProviderClient.lastLocation
@@ -87,14 +102,15 @@ class HomeRepository @Inject constructor(
         timingsDataBase.timingsDao().updateTimings(lastPrayingTime)
     }
 
-    fun getLastAddress(): String {
+    fun getLocalLastAddress(): String {
         val size = timingsDataBase.locationDao().getLastAddress().size
         return timingsDataBase.locationDao().getLastAddress()[size - 1].location
     }
 
+    //getStoredTime
     fun getAllStoredTimings(): PrayerSchedule {
-        val size = timingsDataBase.timingsDao().getAllTimings().size
-        return timingsDataBase.timingsDao().getAllTimings()[size - 1]
+        val size = timingsDataBase.timingsDao().getDayTimings().size
+        return timingsDataBase.timingsDao().getDayTimings()[size - 1]
     }
 
     fun checkPrayingTimeValues(): Int {

@@ -76,16 +76,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
 
         if (isInternetConnected(requireContext())) {
+            //InterNetAvailable
 
+
+            //get Remote TodayTimings
             lifecycleScope.launch(Dispatchers.Main) {
-                //get Times
+                //get Cairo TodayTimings
                 if (latitude == 0.0 && longitude == 0.0) {
-                    viewModel.getTimings(
+                    viewModel.getTodayRemoteTimings(
                         convertToApiDateFormat(date), CAIRO_LAT.toString(), CAIRO_LONG.toString()
                     )
                     viewModel.getAddress(CAIRO_LAT, CAIRO_LONG)
                 } else {
-                    viewModel.getTimings(
+                    //get Location TodayTimings
+                    viewModel.getTodayRemoteTimings(
                         convertToApiDateFormat(date), latitude.toString(), longitude.toString()
                     )
                     viewModel.getAddress(latitude, longitude)
@@ -93,12 +97,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
             }
 
-
+            //RemainingTimeLiveData
             lifecycleScope.launch {
                 viewModel.remainingTimeLiveData.collect {
                     remainingTimeForNextPray = it
                 }
             }
+
+            //RemainingTimeLiveData
             lifecycleScope.launch {
                 viewModel.addressLiveData.collect {
                     address = it.location
@@ -129,8 +135,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 viewModel.remoteIshaLiveData.collect { newValue -> isha = newValue }
 
             }
+
+            //UpdateLocalTimings
             lifecycleScope.launch(Dispatchers.IO) {
-                val timings = PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha)
+                val timings = PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha, address)
                 fagr = timings.fajr
                 sunrise = timings.sunrise
                 duhr = timings.dhuhr
@@ -141,7 +149,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
 
         } else {
-
+            //NoInternetConnection GetLocalData
             lifecycleScope.launch(Dispatchers.IO) {
                 val timings = viewModel.getStoredTimings()
                 fagr = timings.fajr
@@ -151,7 +159,24 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 magribe = timings.maghrib
                 isha = timings.isha
             }
+
+            //RemainingTimeLiveData
+            lifecycleScope.launch {
+                viewModel.remainingTimeLiveData.collect {
+                    remainingTimeForNextPray = it
+                }
+            }
+
+            //RemainingTimeLiveData
+            lifecycleScope.launch {
+                viewModel.addressLiveData.collect {
+                    address = it.location
+                }
+            }
+
         }
+
+        //locationLiveDate
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.locationLiveData.collect {
                 latitude = it.latitude
@@ -160,6 +185,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         }
 
+
+        //currentHourLiveData
         lifecycleScope.launch {
             viewModel.currentHourLiveData.collect {
                 currentHour = it
@@ -167,6 +194,40 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
 
 
+        //nextPrayTimeLiveData
+        lifecycleScope.launch {
+            delay(2000)
+            val prayTime = viewModel.getNextPrayerTimeV(
+                PrayerScheduleConverter(
+                    fagr,
+                    sunrise,
+                    duhr,
+                    asr,
+                    magribe,
+                    isha
+                )
+            )
+            viewModel.getRemainingTimeToNextPrayer(currentHour, prayTime.second, prayTime.first)
+        }
+
+        //goto Qibla Fragment
+        binding.qiblaBtn.setOnClickListener {
+
+            if (latitude == 0.0 && longitude == 0.0) {
+                val action = HomeFragmentDirections.actionHomeFragmentToQiblaFragment(
+                    address, date, CAIRO_LAT.toFloat(), CAIRO_LONG.toFloat(), altitued.toFloat()
+                )
+                Navigation.findNavController(view).navigate(action)
+            } else {
+                val action = HomeFragmentDirections.actionHomeFragmentToQiblaFragment(
+                    address, date, latitude.toFloat(), longitude.toFloat(), altitued.toFloat()
+                )
+                Navigation.findNavController(view).navigate(action)
+            }
+
+        }
+
+        //Updating Database
         binding.settingBtn.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 viewModel.addressLiveData.collect { newAddress ->
@@ -189,7 +250,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
             }
             lifecycleScope.launch(Dispatchers.IO) {
-                val timings = PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha)
+                val timings = PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha, address)
                 if (viewModel.checkPrayingTimeValues() > 0) {
                     Log.d("DATABASETEST", "BIGER")
                     viewModel.updateLocalTimings(timings)
@@ -200,37 +261,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
             }
         }
-
-        lifecycleScope.launch {
-            delay(2000)
-            val prayTime = viewModel.getNextPrayerTimeV(
-                PrayerScheduleConverter(
-                    fagr,
-                    sunrise,
-                    duhr,
-                    asr,
-                    magribe,
-                    isha
-                )
-            )
-            viewModel.getRemainingTimeToNextPrayer(currentHour, prayTime.second, prayTime.first)
-        }
         setViews()
-        binding.qiblaBtn.setOnClickListener {
-
-            if (latitude == 0.0 && longitude == 0.0) {
-                val action = HomeFragmentDirections.actionHomeFragmentToQiblaFragment(
-                    address, date, CAIRO_LAT.toFloat(), CAIRO_LONG.toFloat(), altitued.toFloat()
-                )
-                Navigation.findNavController(view).navigate(action)
-            } else {
-                val action = HomeFragmentDirections.actionHomeFragmentToQiblaFragment(
-                    address, date, latitude.toFloat(), longitude.toFloat(), altitued.toFloat()
-                )
-                Navigation.findNavController(view).navigate(action)
-            }
-
-        }
     }
 
     private fun setViews() {

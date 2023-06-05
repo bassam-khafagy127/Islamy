@@ -11,12 +11,15 @@ interface TimingsDao {
     @Insert
     suspend fun insertTimings(time: PrayerSchedule)
 
+
     @Update
-   suspend fun updateTimings(time: PrayerSchedule)
+    suspend fun updateTimings(time: PrayerSchedule)
+
 
     @Query("SELECT*FROM `PRAYER TIMES`")
-    fun getAllTimings(): List<PrayerSchedule>
+    fun getDayTimings(): List<PrayerSchedule>
 
     @Query("SELECT COUNT(*) FROM `PRAYER TIMES`")
     fun isTableEmpty(): Int
+
 }

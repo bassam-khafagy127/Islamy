@@ -19,6 +19,7 @@ import com.bassamkhafgy.islamy.data.local.PrayerSchedule
 import com.bassamkhafgy.islamy.data.local.PrayerScheduleConverter
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
+import com.bassamkhafgy.islamy.utill.Constants.DATA_BASE.ERROR_TAG_DATABASE
 import com.bassamkhafgy.islamy.utill.Constants.Location.CAIRO_LAT
 import com.bassamkhafgy.islamy.utill.Constants.Location.CAIRO_LONG
 import com.bassamkhafgy.islamy.utill.convertToApiDateFormat
@@ -309,20 +310,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onResume()
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.addressLiveData.collect { newAddress ->
+
                 address = newAddress.location
-                launch(Dispatchers.Main) {
-                    Toast.makeText(
-                        requireContext(),
-                        "DATABASETEST${newAddress.location}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+
+                Log.d(ERROR_TAG_DATABASE, "BIGER")
                 if (viewModel.checkAddressesValues() > 0) {
-                    Log.d("DATABASETEST22", "BIGER")
+                    Log.d(ERROR_TAG_DATABASE, "BIGER")
                     viewModel.updateLastAddress(LastLocation(0, address))
 
                 } else {
-                    Log.d("DATABASETEST2", "Smailler")
+                    Log.d(ERROR_TAG_DATABASE, "Smailler")
                     viewModel.insertLastAddress(newAddress)
                 }
             }
@@ -331,11 +328,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             val timings =
                 PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha, address)
             if (viewModel.checkPrayingTimeValues() > 0) {
-                Log.d("DATABASETEST1", "BIGER")
+                Log.d(ERROR_TAG_DATABASE, "BIGER")
                 viewModel.updateLocalTimings(timings)
 
             } else {
-                Log.d("DATABASETEST11", "Smailler")
+                Log.d(ERROR_TAG_DATABASE, "Smailler")
                 viewModel.insertLocalTimings(timings)
             }
         }

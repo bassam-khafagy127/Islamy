@@ -2,6 +2,7 @@ package com.bassamkhafgy.islamy.viewmodel
 
 import android.location.Location
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bassamkhafgy.islamy.data.local.LastLocation
@@ -9,6 +10,8 @@ import com.bassamkhafgy.islamy.data.local.PrayerSchedule
 import com.bassamkhafgy.islamy.data.local.PrayerScheduleConverter
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.repository.HomeRepository
+import com.bassamkhafgy.islamy.utill.Constants
+import com.bassamkhafgy.islamy.utill.Constants.ERROR_TAG
 import com.bassamkhafgy.islamy.utill.convertTo12HourFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -204,6 +207,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         repository.updatePrayingTimes(prayingTime)
     }
 
+
     //DataBase get Today address
     fun getLastAddress() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -217,9 +221,12 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         }
     }
 
+
     //Get Remaining Time And Next Azan
     fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String, nextAzan: String) {
         viewModelScope.launch {
+
+            Log.d(ERROR_TAG, "cur:$currentTime P:$prayerTime az$nextAzan")
             val durationMillis = repository.getRemainingTimeToNextPrayer(currentTime, prayerTime)
 
             val countDownTimer = object : CountDownTimer(durationMillis, 1000) {
@@ -258,10 +265,12 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         return repository.checkPrayingTimeValues()
     }
 
+
     //get REmote NextDay
     fun getNextPrayerTurnWithConnection(prayerSchedule: PrayerSchedule) {
 
     }
+
 
     //get Remote lastDay
     fun getLastPrayerTurnWithoutConnection() {
@@ -270,8 +279,11 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
 
 
     //getNextAzanValue
-    fun getNextPrayerTimeV(prayerTime: PrayerScheduleConverter): Pair<String, String> {
-        return repository.getNextPrayerTimeR(prayerTime)
+    fun getNextPrayerTimeTitle(prayerTime: PrayerScheduleConverter): Pair<String, String> {
+        val e=repository.getNextPrayerTimeTitle(prayerTime)
+        Log.d(ERROR_TAG + "eeee:",e.second)
+        return repository.getNextPrayerTimeTitle(prayerTime)
     }
 }
 
+//Repos Problem

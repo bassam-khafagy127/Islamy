@@ -2,12 +2,12 @@ package com.bassamkhafgy.islamy.fragments
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Address
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -19,7 +19,7 @@ import com.bassamkhafgy.islamy.data.local.PrayerSchedule
 import com.bassamkhafgy.islamy.data.local.PrayerScheduleConverter
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
-import com.bassamkhafgy.islamy.utill.Constants.DATA_BASE.ERROR_TAG_DATABASE
+import com.bassamkhafgy.islamy.utill.Constants.DATABASE.ERROR_TAG_DATABASE
 import com.bassamkhafgy.islamy.utill.Constants.Location.CAIRO_LAT
 import com.bassamkhafgy.islamy.utill.Constants.Location.CAIRO_LONG
 import com.bassamkhafgy.islamy.utill.convertToApiDateFormat
@@ -139,6 +139,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
             //UpdateLocalTimings
             lifecycleScope.launch(Dispatchers.IO) {
+                delay(5000)
+                Log.d("LOCALTIMINGS","$fagr:D")
                 val timings = PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha, address)
                 fagr = timings.fajr
                 sunrise = timings.sunrise
@@ -146,7 +148,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 asr = timings.asr
                 magribe = timings.maghrib
                 isha = timings.isha
-                viewModel.updateLocalTimings(timings)
+                saveLocalUpdateData(
+                    PrayerScheduleConverter(fagr, sunrise, duhr, asr, magribe, isha),
+                    address
+                )
             }
 
         } else {
@@ -210,7 +215,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         //nextPrayTimeLiveData
         lifecycleScope.launch {
             delay(2000)
-            val prayTime = viewModel.getNextPrayerTimeV(
+            val prayTime = viewModel.getNextPrayerTimeTitle(
                 PrayerScheduleConverter(
                     fagr,
                     sunrise,
@@ -221,6 +226,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 )
             )
             viewModel.getRemainingTimeToNextPrayer(currentHour, prayTime.second, prayTime.first)
+
         }
 
         //goto Qibla Fragment
@@ -240,24 +246,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         }
 
-        //Updating Database
-        binding.settingBtn.setOnClickListener {
-            val action =HomeFragmentDirections.actionHomeFragmentToSplashFragment()
-            Navigation.findNavController(view).navigate(action)
-
-        }
-        binding.topLocationBtn.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment(
-                fagr,
-                sunrise,
-                duhr,
-                asr,
-                magribe,
-                isha
-            )
-            Navigation.findNavController(view).navigate(action)
-        }
         setViews()
+        addCallback(view)
     }
 
     private fun setViews() {
@@ -288,20 +278,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun saveLocalUpdateData(
+        prayerScheduleConverter: PrayerScheduleConverter,
+        addressToLocl: String
+    ) {
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.addressLiveData.collect { newAddress ->
-
                 address = newAddress.location
-
-                Log.d(ERROR_TAG_DATABASE, "BIGER")
                 if (viewModel.checkAddressesValues() > 0) {
-                    Log.d(ERROR_TAG_DATABASE, "BIGER")
-                    viewModel.updateLastAddress(LastLocation(0, address))
-
+                    Log.d(ERROR_TAG_DATABASE, "BIGERAddress")
+                    viewModel.updateLastAddress(LastLocation(0, addressToLocl))
                 } else {
-                    Log.d(ERROR_TAG_DATABASE, "Smailler")
+                    Log.d(ERROR_TAG_DATABASE, "SmallerAddress")
                     viewModel.insertLastAddress(newAddress)
                 }
             }
@@ -310,13 +298,33 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             val timings =
                 PrayerSchedule(0, fagr, sunrise, duhr, asr, magribe, isha, address)
             if (viewModel.checkPrayingTimeValues() > 0) {
-                Log.d(ERROR_TAG_DATABASE, "BIGER")
+                Log.d(ERROR_TAG_DATABASE, "BIGERPrayer")
                 viewModel.updateLocalTimings(timings)
 
             } else {
-                Log.d(ERROR_TAG_DATABASE, "Smailler")
+                Log.d(ERROR_TAG_DATABASE, "SmallerPrayer")
                 viewModel.insertLocalTimings(timings)
             }
+        }
+    }
+
+    private fun addCallback(view: View) {
+
+        binding.settingBtn.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeFragmentToSplashFragment()
+            Navigation.findNavController(view).navigate(action)
+
+        }
+        binding.topLocationBtn.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment(
+                fagr,
+                sunrise,
+                duhr,
+                asr,
+                magribe,
+                isha
+            )
+            Navigation.findNavController(view).navigate(action)
         }
     }
 }

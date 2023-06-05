@@ -18,7 +18,7 @@ object Constants {
         val ENGLISH_LANGUAGE = "en"
     }
 
-    object DATA_BASE {
+    object DATABASE {
         const val PRAYER_TABLE_NAME = "PRAYER TIMES"
         const val ERROR_TAG_DATABASE = "ERROR_TAG_DATABASE"
         const val LOCATION_TABLE_NAME = "LAST LOCATION"

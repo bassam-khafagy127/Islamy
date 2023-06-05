@@ -40,18 +40,9 @@ class HomeRepository @Inject constructor(
         return timeApiService.getPrayerTimes(day, latitude, longitude)
     }
 
-//    getRemoteNextLastDayTimings
-//    suspend fun getTimingsForNextDay(
-//        day: String,
-//        latitude: String,
-//        longitude: String
-//    ): Response<TimeResponse> {
-//        return timeApiService.getPrayerTimes(day, latitude, longitude)
-//    }
-
 
     //    getGeoAddress
-    fun  getAddress(latitude: Double, longitude: Double): String? {
+    fun getAddress(latitude: Double, longitude: Double): String? {
         return getAddressGeocoder(context, latitude, longitude)
     }
 
@@ -67,6 +58,13 @@ class HomeRepository @Inject constructor(
     fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String): Long {
         return getPrayerRemainingTime(currentTime, prayerTime)
     }
+
+
+    //getPrayer time and prayer title
+    fun getNextPrayerTimeTitle(prayerTime: PrayerScheduleConverter): Pair<String, String> {
+        return calculateNextAzanTime(prayerTime)
+    }
+
 
     //getLocation witGPs
     @SuppressLint("MissingPermission")
@@ -119,10 +117,6 @@ class HomeRepository @Inject constructor(
 
     fun checkAddressesValues(): Int {
         return timingsDataBase.locationDao().isTableEmpty()
-    }
-
-    fun getNextPrayerTimeR(prayerTime: PrayerScheduleConverter): Pair<String, String> {
-        return calculateNextAzanTime(prayerTime)
     }
 
 

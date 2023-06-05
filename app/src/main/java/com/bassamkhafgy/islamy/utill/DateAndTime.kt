@@ -12,8 +12,6 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-private var _remainingTimeLiveData = MutableStateFlow("")
-
 fun getSystemDate(): String {
     val currentDate = Calendar.getInstance().time
     val dateFormat =
@@ -70,8 +68,9 @@ fun getPrayerRemainingTime(
 }
 
 fun calculateNextAzanTime(prayerTimes: PrayerScheduleConverter): Pair<String, String> {
-    val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+    val currentTime = SimpleDateFormat("hh:mm", Locale.ENGLISH).format(Date())
 
+    val sdf = SimpleDateFormat("hh:mm", Locale.ENGLISH)
     val azanTimes = listOf(
         "Fajr" to prayerTimes.fajr,
         "Sunrise" to prayerTimes.sunrise,
@@ -93,12 +92,14 @@ fun calculateNextAzanTime(prayerTimes: PrayerScheduleConverter): Pair<String, St
             nextAzanTitle = azanTime.first
         }
     }
-
+    Log.d(Constants.ERROR_TAG + "Title azan:", nextAzanTitle)
+    Log.d(Constants.ERROR_TAG + "Title current:", currentTime)
+    Log.d(Constants.ERROR_TAG + "Title time:", nextAzanTime)
     return nextAzanTitle to nextAzanTime
 }
 
-private fun calculateMinuteDifference(time1: String, time2: String): Int {
-    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+fun calculateMinuteDifference(time1: String, time2: String): Int {
+    val timeFormat = SimpleDateFormat("hh:mm", Locale.ENGLISH)
     val date1 = timeFormat.parse(time1)
     val date2 = timeFormat.parse(time2)
 

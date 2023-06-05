@@ -50,7 +50,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             binding.magrebTextView.text = searchArgs.magribrArgs
             binding.ishaTextView.text = searchArgs.ishaArgs
 
-
         }
 
         binding.searchBTN.setOnClickListener {

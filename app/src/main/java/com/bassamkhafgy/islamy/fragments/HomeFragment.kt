@@ -223,7 +223,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 )
             )
             Log.d("TTTTT:Fragment", prayTime.second + prayTime.first)
-            viewModel.getRemainingTimeToNextPrayer(currentHour, "12:5", "fagr")
+            viewModel.getRemainingTimeToNextPrayer(currentHour, prayTime.second, prayTime.second)
 
 
         }

@@ -51,7 +51,7 @@ class HomeRepository @Inject constructor(
 
 
     //    getGeoAddress
-    fun getAddress(latitude: Double, longitude: Double): String? {
+    fun  getAddress(latitude: Double, longitude: Double): String? {
         return getAddressGeocoder(context, latitude, longitude)
     }
 

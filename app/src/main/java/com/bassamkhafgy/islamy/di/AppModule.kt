@@ -4,6 +4,7 @@ import android.content.Context
 import com.bassamkhafgy.islamy.data.database.IslamyAppDataBase
 import com.bassamkhafgy.islamy.networking.TimeApiService
 import com.bassamkhafgy.islamy.repository.HomeRepository
+import com.bassamkhafgy.islamy.repository.SearchRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.Module
@@ -25,7 +26,20 @@ object AppModule {
         timeApiService: TimeApiService,
         timingsDataBase: IslamyAppDataBase
     ): HomeRepository {
-        return HomeRepository(appContext, fusedLocationProviderClient, timeApiService,timingsDataBase)
+        return HomeRepository(
+            appContext,
+            fusedLocationProviderClient,
+            timeApiService,
+            timingsDataBase
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSearchRepository(
+        timeApiService: TimeApiService, @ApplicationContext appContext: Context
+    ): SearchRepository {
+        return SearchRepository(timeApiService, appContext)
     }
 
     @Provides

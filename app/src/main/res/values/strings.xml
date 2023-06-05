@@ -18,4 +18,7 @@
     <string name="latlongDummy">lat:12.21212\nLong:12.554544</string>
     <string name="searchForCity">Search For City</string>
     <string name="show_on_map">Show on map!!</string>
+    <string name="hijri_date">Hijri Date:</string>
+    <string name="miladiDate">Gregorian:</string>
+    <string name="search">Search</string>
 </resources>

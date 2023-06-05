@@ -19,4 +19,8 @@
     <string name="latlongDummy">خط الطول:12.21212\خط العرض:12.554544</string>
     <string name="searchForCity">بحث عن مدينة أخري</string>
     <string name="show_on_map">إظهار علي الخريطة</string>
+    <string name="hijri_date">التاريخ الهجري:</string>
+    <string name="miladiDate">التاريخ الميلادي:</string>
+    <string name="search">بحث</string>
+
 </resources>

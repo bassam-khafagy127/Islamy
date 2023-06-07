@@ -11,7 +11,7 @@ interface TimeApiService {
     suspend fun getPrayerTimes(
         @Path("day") day: String,
         @Query("latitude") latitude: String,
-        @Query("longitude") longitude: String
+        @Query("longitude") longitude: String,
     ): Response<TimeResponse>
 
 }

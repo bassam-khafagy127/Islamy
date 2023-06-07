@@ -5,6 +5,7 @@ import com.bassamkhafgy.islamy.data.database.IslamyAppDataBase
 import com.bassamkhafgy.islamy.networking.TimeApiService
 import com.bassamkhafgy.islamy.repository.HomeRepository
 import com.bassamkhafgy.islamy.repository.SearchRepository
+
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.Module

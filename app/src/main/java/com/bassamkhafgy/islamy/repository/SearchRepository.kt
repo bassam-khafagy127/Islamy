@@ -8,9 +8,12 @@ import com.bassamkhafgy.islamy.utill.getSystemDate
 import retrofit2.Response
 import javax.inject.Inject
 
-class SearchRepository@Inject constructor(private val timeApiService: TimeApiService, private val context: Context) {
+class SearchRepository @Inject constructor(
+    private val timeApiService: TimeApiService,
+    private val context: Context
+) {
 
-    //    getRemoteNextLastDayTimings
+    // getRemoteNextLastDayTimings
     suspend fun getTodayTimings(
         day: String,
         latitude: String,
@@ -18,10 +21,11 @@ class SearchRepository@Inject constructor(private val timeApiService: TimeApiSer
     ): Response<TimeResponse> {
         return timeApiService.getPrayerTimes(day, latitude, longitude)
     }
+
     fun getDate() = getSystemDate()
 
     //    getGeoAddress
-    fun  getAddress(latitude: Double, longitude: Double): String? {
+    fun getAddress(latitude: Double, longitude: Double): String? {
         return getAddressGeocoder(context, latitude, longitude)
     }
 }

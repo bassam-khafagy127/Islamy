@@ -7,11 +7,10 @@ import com.bassamkhafgy.islamy.utill.Constants.DATABASE.PRAYER_TABLE_NAME
 @Entity(tableName = PRAYER_TABLE_NAME)
 data class PrayerSchedule(
     @PrimaryKey(autoGenerate = true) val id: Int,
-    val fajr: String,
-    val sunrise: String,
-    val dhuhr: String,
-    val asr: String,
-    val maghrib: String,
-    val isha: String,
-    val address: String
+    var fajr: String,
+    var sunrise: String,
+    var dhuhr: String,
+    var asr: String,
+    var maghrib: String,
+    var isha: String,
 )

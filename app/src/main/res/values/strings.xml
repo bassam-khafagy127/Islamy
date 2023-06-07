@@ -21,4 +21,7 @@
     <string name="hijri_date">Hijri Date:</string>
     <string name="miladiDate">Gregorian:</string>
     <string name="search">Search</string>
+    <string name="kaaba">Kaaba</string>
+    <string name="yourLocation">Your Location</string>
+
 </resources>

@@ -1,16 +1,10 @@
 package com.bassamkhafgy.islamy.utill
 
-import android.text.format.Time
-import android.util.Log
-import com.bassamkhafgy.islamy.data.local.PrayerSchedule
-import com.bassamkhafgy.islamy.data.local.PrayerScheduleConverter
-import com.bassamkhafgy.islamy.data.local.utillmodels.PrayerTime
-import kotlinx.coroutines.flow.MutableStateFlow
-import java.lang.Math.abs
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+
 
 fun getSystemDate(): String {
     val currentDate = Calendar.getInstance().time
@@ -21,97 +15,20 @@ fun getSystemDate(): String {
     )
 }
 
-fun getSystemCurrentTime(): String {
-    val currentTime = Calendar.getInstance()
-    val timeFormat = SimpleDateFormat("hh:mm", Locale.ENGLISH)
-    return timeFormat.format(currentTime.time)
-}
 
-fun convertTo12HourFormat(time24: String): String {
+//convert Api To response time 12hrs
+fun getTime12hrsFormat(time24: String): String {
     val inputFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-    val outputFormat = SimpleDateFormat("hh:mm", Locale.ENGLISH)
+    val outputFormat = SimpleDateFormat("hh:mm a", Locale.ENGLISH)
     val time = inputFormat.parse(time24)
     return outputFormat.format(time!!)
 }
 
-fun convertToApiDateFormat(inputDate: String): String {
-    val inputFormat = SimpleDateFormat("yyyy, MMMM d", Locale.getDefault())
-    val outputFormat = SimpleDateFormat("d-M-yyyy", Locale.ENGLISH)
-    val date = inputFormat.parse(inputDate)
-    return outputFormat.format(date!!)
+//get date for api request
+fun getTimeForApi(): String {
+    return SimpleDateFormat("d-M-yyyy", Locale.ENGLISH).format(Date())
 }
 
-fun getPrayerRemainingTime(
-    currentTime: String,
-    prayerTime: String
-): Long {
-    val currentTimeObj = Time()
-    val prayerTimeObj = Time()
-    // Set current time
-    val currentTimeSplit = currentTime.split(":")
-    currentTimeObj.hour = currentTimeSplit[0].toInt()
-    currentTimeObj.minute = currentTimeSplit[1].toInt()
-
-    // Set prayer time
-    val prayerTimeSplit = prayerTime.split(":")
-    prayerTimeObj.hour = prayerTimeSplit[0].toInt()
-    prayerTimeObj.minute = prayerTimeSplit[1].toInt()
-
-    // If the prayer time has already passed for the day, set it to the next day
-    if (prayerTimeObj.before(currentTimeObj)) {
-        prayerTimeObj.set(currentTimeObj)
-        prayerTimeObj.minute += 1
-    }
 
 
-    return prayerTimeObj.toMillis(true) - currentTimeObj.toMillis(true)
-}
 
-fun calculateNextAzanTime(prayerTimes: PrayerScheduleConverter): Pair<String, String> {
-    val currentTime = SimpleDateFormat("hh:mm", Locale.ENGLISH).format(Date())
-    val sdf = SimpleDateFormat("hh:mm", Locale.ENGLISH)
-    val azanTimes = listOf(
-        "Fajr" to prayerTimes.fajr,
-        "Sunrise" to prayerTimes.sunrise,
-        "Dhuhr" to prayerTimes.dhuhr,
-        "Asr" to prayerTimes.asr,
-        "Maghrib" to prayerTimes.maghrib,
-        "Isha" to prayerTimes.isha
-    )
-
-    var nextAzanTime = ""
-    var nextAzanTitle = ""
-    var minTimeDifference = Int.MAX_VALUE
-
-    for (azanTime in azanTimes) {
-        val timeDifference = calculateMinuteDifference(currentTime, azanTime.second)
-        if (timeDifference in 1 until minTimeDifference) {
-            minTimeDifference = timeDifference
-            nextAzanTime = azanTime.second
-            nextAzanTitle = azanTime.first
-        }
-    }
-    Log.d(Constants.ERROR_TAG + "Title azan:", nextAzanTitle)
-    Log.d(Constants.ERROR_TAG + "Title current:", currentTime)
-    Log.d(Constants.ERROR_TAG + "Title time:", nextAzanTime)
-    return nextAzanTitle to nextAzanTime
-}
-
-fun calculateMinuteDifference(time1: String, time2: String): Int {
-    val timeFormat = SimpleDateFormat("hh:mm", Locale.getDefault())
-    val date1 = timeFormat.parse(time1)
-    val date2 = timeFormat.parse(time2)
-
-    val calendar1 = Calendar.getInstance()
-    val calendar2 = Calendar.getInstance()
-    calendar1.time = date1
-    calendar2.time = date2
-
-    // Check if the hour is 12 for time2 and adjust the calendar accordingly
-    if (calendar2.get(Calendar.HOUR) == 12 && calendar2.get(Calendar.AM_PM) == Calendar.AM) {
-        calendar2.set(Calendar.HOUR, 0)
-    }
-
-    val differenceInMillis = calendar2.timeInMillis - calendar1.timeInMillis
-    return (differenceInMillis / (1000 * 60)).toInt()
-}

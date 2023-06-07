@@ -79,7 +79,9 @@ class QiblaFragment : Fragment(R.layout.fragment_qibla), SensorEventListener {
 
         binding.searchForNewCityTv.setOnClickListener {
             val action =
-                QiblaFragmentDirections.actionQiblaFragmentToSearchFragment("", "", "", "", "", "")
+                QiblaFragmentDirections.actionQiblaFragmentToSearchFragment(
+                    qiblaArgs.addressGyocoderArgs,
+                )
             Navigation.findNavController(view).navigate(action)
         }
 
@@ -158,15 +160,16 @@ class QiblaFragment : Fragment(R.layout.fragment_qibla), SensorEventListener {
     }
 
     private fun openMap() {
+
         val uri = String.format(
             Locale.ENGLISH,
             "http://maps.google.com/maps?saddr=%f,%f(%s)&daddr=%f,%f (%s)",
             userLoc.latitude,
             userLoc.longitude,
-            "Your Location",
+            resources.getString(R.string.arabic),
             KAABA_LAT,
             KAABA_LONG,
-            "Kaba"
+            resources.getString(R.string.kaaba)
         )
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
         intent.setPackage("com.google.android.apps.maps")

@@ -15,6 +15,6 @@ import dagger.hilt.components.SingletonComponent
 object DateBaseModule {
     @Provides
     fun provideTimingDataBase(@ApplicationContext context: Context): IslamyAppDataBase {
-        return Room.databaseBuilder(context,IslamyAppDataBase::class.java,TIMINGS_DATABASE_NAME).build()
+        return Room.databaseBuilder(context, IslamyAppDataBase::class.java,TIMINGS_DATABASE_NAME).build()
     }
 }

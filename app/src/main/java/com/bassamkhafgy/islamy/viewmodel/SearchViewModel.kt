@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.bassamkhafgy.islamy.data.local.LastLocation
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.repository.SearchRepository
-import com.bassamkhafgy.islamy.utill.convertTo12HourFormat
+import com.bassamkhafgy.islamy.utill.getTime12hrsFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -53,12 +53,12 @@ class SearchViewModel @Inject constructor(private val repository: SearchReposito
             val timings: Response<TimeResponse> =
                 repository.getTodayTimings(day, latitude, longitude)
             if (timings.isSuccessful) {
-                fagr = convertTo12HourFormat("${timings.body()?.data?.timings?.fajr}")
-                sunrise = convertTo12HourFormat("${timings.body()?.data?.timings?.sunrise}")
-                duhr = convertTo12HourFormat("${timings.body()?.data?.timings?.dhuhr}")
-                asr = convertTo12HourFormat("${timings.body()?.data?.timings?.asr}")
-                magribe = convertTo12HourFormat("${timings.body()?.data?.timings?.maghrib}")
-                isha = convertTo12HourFormat("${timings.body()?.data?.timings?.isha}")
+                fagr = getTime12hrsFormat("${timings.body()?.data?.timings?.fajr}")
+                sunrise = getTime12hrsFormat("${timings.body()?.data?.timings?.sunrise}")
+                duhr = getTime12hrsFormat("${timings.body()?.data?.timings?.dhuhr}")
+                asr = getTime12hrsFormat("${timings.body()?.data?.timings?.asr}")
+                magribe = getTime12hrsFormat("${timings.body()?.data?.timings?.maghrib}")
+                isha = getTime12hrsFormat("${timings.body()?.data?.timings?.isha}")
                 address =
                     repository.getAddress(latitude.toDouble(), longitude.toDouble()).toString()
                 hijriDate = "${timings.body()?.data?.date?.hijri?.date}"

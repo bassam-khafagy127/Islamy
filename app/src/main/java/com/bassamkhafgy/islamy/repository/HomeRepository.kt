@@ -1,23 +1,16 @@
 package com.bassamkhafgy.islamy.repository
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
-import android.util.Log
 import com.bassamkhafgy.islamy.data.database.IslamyAppDataBase
-import com.bassamkhafgy.islamy.data.local.LastLocation
 import com.bassamkhafgy.islamy.data.local.PrayerSchedule
-import com.bassamkhafgy.islamy.data.local.PrayerScheduleConverter
-import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.networking.TimeApiService
-import com.bassamkhafgy.islamy.utill.Constants.ERROR_TAG
-import com.bassamkhafgy.islamy.utill.calculateNextAzanTime
 import com.bassamkhafgy.islamy.utill.getAddressGeocoder
-import com.bassamkhafgy.islamy.utill.getPrayerRemainingTime
-import com.bassamkhafgy.islamy.utill.getSystemCurrentTime
-import com.bassamkhafgy.islamy.utill.getSystemDate
+import com.bassamkhafgy.islamy.utill.getLocationLatitudeLongitude
+import com.bassamkhafgy.islamy.utill.getTime12hrsFormat
+import com.bassamkhafgy.islamy.utill.getTimeForApi
 import com.google.android.gms.location.FusedLocationProviderClient
-import retrofit2.Response
+import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
 
 class HomeRepository @Inject constructor(
@@ -26,84 +19,66 @@ class HomeRepository @Inject constructor(
     private val timeApiService: TimeApiService,
     private val timingsDataBase: IslamyAppDataBase
 ) {
-    init {
-        getLocationCoordination()
+
+    //getLocation Coordination witGPs
+    suspend fun getLocationCoordination(): SharedFlow<Location> {
+        return getLocationLatitudeLongitude(fusedLocationProviderClient)
     }
 
-    private val _location: Location = Location("")
+    private var currentTimings = PrayerSchedule(0, "", "", "", "", "", "")
 
-    suspend fun getTodayTimings(
+    //getRemoteData
+    suspend fun getRemoteTimings(
         day: String,
         latitude: String,
-        longitude: String
-    ): Response<TimeResponse> {
-        return timeApiService.getPrayerTimes(day, latitude, longitude)
-    }
+        longitude: String,
+    ): PrayerSchedule {
+        val timings = timeApiService.getPrayerTimes(day, latitude, longitude)
+        val prayerTimesResponse = timings.body()?.data?.timings
 
+        if (timings.isSuccessful) {
+            currentTimings.fajr = getTime12hrsFormat(prayerTimesResponse?.fajr.toString())
+            currentTimings.sunrise = getTime12hrsFormat(prayerTimesResponse?.sunrise.toString())
+            currentTimings.dhuhr = getTime12hrsFormat(prayerTimesResponse?.dhuhr.toString())
+            currentTimings.asr = getTime12hrsFormat(prayerTimesResponse?.asr.toString())
+            currentTimings.maghrib = getTime12hrsFormat(prayerTimesResponse?.maghrib.toString())
+            currentTimings.isha = getTime12hrsFormat(prayerTimesResponse?.isha.toString())
 
-    //    getGeoAddress
-    fun getAddress(latitude: Double, longitude: Double): String? {
-        return getAddressGeocoder(context, latitude, longitude)
-    }
+            //drop old data
+            timingsDataBase.timingsDao().deleteOldData()
+            //insert to local database
+            insertUpdateDayTimings(currentTimings)
+            return currentTimings
 
-    //    getSystemDate
-    fun getDate() = getSystemDate()
+        } else {
+            //getDataBaseData
+            currentTimings = getCachedTimings()
 
-    //getSystemTime
-    fun getCurrentHour(): String {
-        return getSystemCurrentTime()
-    }
-
-    //Get Remaining Time And Next Azan
-    fun getRemainingTimeToNextPrayer(currentTime: String, prayerTime: String): Long {
-        return getPrayerRemainingTime(currentTime, prayerTime)
-    }
-
-
-    //getPrayer time and prayer title
-    fun getNextPrayerTimeTitle(prayerTime: PrayerScheduleConverter): Pair<String, String> {
-        return calculateNextAzanTime(prayerTime)
-    }
-
-
-    //getLocation witGPs
-    @SuppressLint("MissingPermission")
-    fun getLocationCoordination(): Location {
-        val location = fusedLocationProviderClient.lastLocation
-        location.addOnSuccessListener {
-
-            if (it != null) {
-                _location.latitude = it.latitude
-                _location.longitude = it.longitude
-                _location.altitude = it.altitude
-
-            }
-        }.addOnFailureListener {
-            Log.e(ERROR_TAG, it.message.toString())
+            return currentTimings
         }
-        return _location
+    }
+
+    //getAddress
+    fun getAddressFromLatLong(latitude: String, longitude: String): String {
+        return getAddressGeocoder(context, latitude.toDouble(), longitude.toDouble())!!
+    }
+
+    //getTodayDate
+    fun getTimeForApiFormat(): String {
+        return getTimeForApi()
     }
 
 
-    suspend fun insertToLocalPrayingTimes(time: PrayerSchedule) {
-        timingsDataBase.timingsDao().insertTimings(time)
+    //insert Today Timings to dataBase
+    private suspend fun insertUpdateDayTimings(timings: PrayerSchedule) {
+        timingsDataBase.timingsDao().insertTimings(timings)
     }
 
-
-    suspend fun updatePrayingTimes(lastPrayingTime: PrayerSchedule) {
-        timingsDataBase.timingsDao().updateTimings(lastPrayingTime)
+    //getDataFromDataBase
+    fun getCachedTimings(): PrayerSchedule {
+        return timingsDataBase.timingsDao().getDayTimings()
     }
 
-
-    //getStoredTime
-    fun getAllStoredTimings(): PrayerSchedule {
-        val size = timingsDataBase.timingsDao().getDayTimings().size
-        return timingsDataBase.timingsDao().getDayTimings()[size - 1]
-    }
-
-    fun checkPrayingTimeValues(): Int {
-        return timingsDataBase.timingsDao().isTableEmpty()
-    }
 
 
 }

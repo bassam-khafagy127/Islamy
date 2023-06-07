@@ -42,15 +42,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.apply {
-            binding.fagrTextView.text = searchArgs.fagrArgs
-            binding.shroukTextView.text = searchArgs.sunrisArgs
-            binding.zohrCardTextView.text = searchArgs.duhrArgs
-            binding.asrCardTextView.text = searchArgs.asrArgs
-            binding.magrebTextView.text = searchArgs.magribrArgs
-            binding.ishaTextView.text = searchArgs.ishaArgs
-
-        }
 
         binding.searchBTN.setOnClickListener {
             getTimings()
@@ -62,36 +53,43 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             }
 
         }
+
         lifecycleScope.launch {
             remoteSunriseLiveData.collect {
                 binding.shroukTextView.text = it
             }
         }
+
         lifecycleScope.launch {
             remoteDuhrLiveData.collect {
                 binding.zohrCardTextView.text = it
             }
         }
+
         lifecycleScope.launch {
             remoteAsrLiveData.collect {
                 binding.asrCardTextView.text = it
             }
         }
+
         lifecycleScope.launch {
             remoteMagribeLiveData.collect {
                 binding.magrebTextView.text = it
             }
         }
+
         lifecycleScope.launch {
             remoteIshaLiveData.collect {
                 binding.ishaTextView.text = it
             }
         }
+
         lifecycleScope.launch {
             addressLiveData.collect {
                 binding.addressTV.text = it.location
             }
         }
+
         lifecycleScope.launch {
             binding.miladyDate.text = viewModel.getDay()
         }

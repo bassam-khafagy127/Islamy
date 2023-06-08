@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,11 +15,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.bassamkhafgy.islamy.R
+import com.bassamkhafgy.islamy.data.local.PrayerTime
 import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
 import com.bassamkhafgy.islamy.utill.convertDateFormat
 import com.bassamkhafgy.islamy.utill.getDayCounter
+import com.bassamkhafgy.islamy.utill.getNextAzanTitle
 import com.bassamkhafgy.islamy.utill.getSystemDate
 import com.bassamkhafgy.islamy.utill.isInternetConnected
 import com.bassamkhafgy.islamy.viewmodel.HomeViewModel
@@ -112,7 +115,27 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 currentTimings.asr = it.asr
                 currentTimings.maghrib = it.maghrib
                 currentTimings.isha = it.isha
+
+                delay(100)
+                val prayerTimes = listOf(
+                    PrayerTime("Fajr", "${currentTimings.fajr}"),
+                    PrayerTime("Sunrise", "${currentTimings.sunrise}"),
+                    PrayerTime("Dhuhr", "${currentTimings.dhuhr}"),
+                    PrayerTime("Asr", "${currentTimings.asr}"),
+                    PrayerTime("Maghrib", "${currentTimings.maghrib}"),
+                    PrayerTime("Isha", "${currentTimings.isha}"),
+                    PrayerTime("Fajr", "${currentTimings.fajr}")
+                    // Next day's Fajr
+                )
+                prayerTimes.forEach { times ->
+                    Log.d("PrayeTime: ${times.prayerName}", "Time:" + times.time)
+                }
+
+                Log.d("PrayeTime: nextAzan", "Time:" + getNextAzanTitle(prayerTimes))
+
             }
+
+
         }
 
         //getCurrentUserAddress

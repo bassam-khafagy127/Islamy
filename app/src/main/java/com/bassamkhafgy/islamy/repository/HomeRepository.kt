@@ -68,6 +68,26 @@ class HomeRepository @Inject constructor(
         }
     }
 
+    //getNExtAndLastDay
+    suspend fun getNextAndLastDayTimings(
+        day: String,
+        latitude: String,
+        longitude: String,
+    ): PrayerSchedule {
+        val timings = timeApiService.getPrayerTimes(day, latitude, longitude)
+        val prayerTimesResponse = timings.body()?.data?.timings
+
+        if (timings.isSuccessful) {
+            currentTimings.fajr = getTime12hrsFormat(prayerTimesResponse?.fajr.toString())
+            currentTimings.sunrise = getTime12hrsFormat(prayerTimesResponse?.sunrise.toString())
+            currentTimings.dhuhr = getTime12hrsFormat(prayerTimesResponse?.dhuhr.toString())
+            currentTimings.asr = getTime12hrsFormat(prayerTimesResponse?.asr.toString())
+            currentTimings.maghrib = getTime12hrsFormat(prayerTimesResponse?.maghrib.toString())
+            currentTimings.isha = getTime12hrsFormat(prayerTimesResponse?.isha.toString())
+        }
+        return currentTimings
+    }
+
     //getAddress
     fun getAddressFromLatLong(latitude: String, longitude: String): String {
         return getAddressGeocoder(context, latitude.toDouble(), longitude.toDouble())!!
@@ -85,7 +105,7 @@ class HomeRepository @Inject constructor(
     }
 
     //updateTimings
-    suspend fun dropOldData() {
+    private suspend fun dropOldData() {
         timingsDataBase.timingsDao().deleteOldData()
     }
 

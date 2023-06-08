@@ -35,9 +35,6 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     private val _liveAddressFlow: MutableStateFlow<String> = MutableStateFlow("")
     val liveAddressFlow: StateFlow<String> = _liveAddressFlow
 
-    private val _remainingToNextPrayerFlow: MutableStateFlow<String> = MutableStateFlow("")
-    val remainingToNextPrayerFlow: StateFlow<String> = _remainingToNextPrayerFlow
-
 
     //GetLocationLatLong
     fun getLocationCoordination() {
@@ -49,8 +46,6 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     }
 
     //getRemoteTimings
-
-
     fun getRemoteTimings(
         day: String,
         latitude: String,
@@ -58,6 +53,32 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             val timingsResponse = repository.getRemoteTimings(day, latitude, longitude)
+            _prayingTimingsFlow.emit(
+                Timings(
+                    timingsResponse.asr,
+                    timingsResponse.dhuhr,
+                    timingsResponse.fajr,
+                    "",
+                    "",
+                    timingsResponse.isha,
+                    "",
+                    timingsResponse.maghrib,
+                    "",
+                    timingsResponse.sunrise,
+                    ""
+                )
+            )
+        }
+    }
+
+    //getNextLastTimings
+    fun getNextAndLastDayTimings(
+        day: String,
+        latitude: String,
+        longitude: String
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val timingsResponse = repository.getNextAndLastDayTimings(day, latitude, longitude)
             _prayingTimingsFlow.emit(
                 Timings(
                     timingsResponse.asr,
@@ -112,65 +133,4 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         }
     }
 
-
 }
-
-//    suspend fun getRemoteTimings(
-//        day: String,
-//        latitude: String,
-//        longitude: String
-//    ) {
-//        val response = repository.getRemoteTimings(day, latitude, longitude)
-//
-//        if (response.isSuccessful) {
-//
-//            val prayerTimesResponse = response.body()?.data?.timings
-//
-//            currentTimings.fajr = getTime12hrsFormat(prayerTimesResponse?.fajr.toString())
-//            currentTimings.sunrise = getTime12hrsFormat(prayerTimesResponse?.sunrise.toString())
-//            currentTimings.dhuhr = getTime12hrsFormat(prayerTimesResponse?.dhuhr.toString())
-//            currentTimings.asr = getTime12hrsFormat(prayerTimesResponse?.asr.toString())
-//            currentTimings.maghrib = getTime12hrsFormat(prayerTimesResponse?.maghrib.toString())
-//            currentTimings.isha = getTime12hrsFormat(prayerTimesResponse?.isha.toString())
-//
-//            //emit data
-//            _prayingTimingsFlow.emit(currentTimings)
-//
-//            //drop old data
-//            repository.dropOldData()
-//
-//            //insert to local database
-//            repository.insertUpdateDayTimings(
-//                PrayerSchedule(
-//                    0,
-//                    currentTimings.fajr!!,
-//                    currentTimings.sunrise!!,
-//                    currentTimings.dhuhr!!,
-//                    currentTimings.asr!!,
-//                    currentTimings.maghrib!!,
-//                    currentTimings.isha!!
-//                )
-//            )
-//
-//        } else {
-//            //getDataBaseData
-//            val cachedTimings = repository.getCachedTimings()
-//            _prayingTimingsFlow.emit(
-//                Timings(
-//                    cachedTimings.asr,
-//                    cachedTimings.dhuhr,
-//                    cachedTimings.fajr,
-//                    "",
-//                    "",
-//                    cachedTimings.isha,
-//                    "",
-//                    cachedTimings.maghrib,
-//                    "",
-//                    cachedTimings.sunrise,
-//                    ""
-//                )
-//            )
-//
-//        }
-//    }
-

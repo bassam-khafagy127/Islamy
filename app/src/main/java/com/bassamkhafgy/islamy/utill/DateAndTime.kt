@@ -1,5 +1,6 @@
 package com.bassamkhafgy.islamy.utill
 
+import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -29,6 +30,16 @@ fun getTimeForApi(): String {
     return SimpleDateFormat("d-M-yyyy", Locale.ENGLISH).format(Date())
 }
 
+fun getDayCounter(daysToAdd: Int): String {
+    val calendar = Calendar.getInstance()
+    calendar.add(Calendar.DAY_OF_YEAR, daysToAdd)
+
+    val dateFormat = SimpleDateFormat("d-M-yyyy", Locale.ENGLISH)
+    val formattedDate = dateFormat.format(calendar.time)
+    Log.d("NEXT DAY", formattedDate)
+
+    return formattedDate
+}
 
 
 

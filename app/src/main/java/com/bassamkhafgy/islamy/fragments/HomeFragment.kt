@@ -16,6 +16,7 @@ import com.bassamkhafgy.islamy.R
 import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
+import com.bassamkhafgy.islamy.utill.getDayCounter
 import com.bassamkhafgy.islamy.utill.getSystemDate
 import com.bassamkhafgy.islamy.utill.isInternetConnected
 import com.bassamkhafgy.islamy.viewmodel.HomeViewModel
@@ -38,6 +39,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     //CurrentPrayingTimings
     private val currentTimings = Timings("", "", "", "", "", "", "", "", "", "", "")
 
+    private var dayCounter = 0
+
     override
 
     fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +62,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         addCallback(view)
-
         //location live data
         lifecycleScope.launch {
             viewModel.flowLocationData.collect {
@@ -80,6 +82,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     currentLocation.longitude.toString()
                 )
             }
+
             //refresh address
             lifecycleScope.launch {
                 delay(180)
@@ -88,14 +91,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     currentLocation.longitude.toString()
                 )
             }
+
         } else {
             //is not connected
-            lifecycleScope.launch (Dispatchers.IO){
+            lifecycleScope.launch(Dispatchers.IO) {
                 viewModel.getCachedTimings()
             }
 
         }
-
 
 
         //        refresh timings
@@ -162,6 +165,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 currentAddress
             )
             Navigation.findNavController(view).navigate(action)
+        }
+        binding.nextArrowTimeBTN.setOnClickListener {
+            dayCounter++
+            lifecycleScope.launch {
+                viewModel.getNextAndLastDayTimings(
+                    getDayCounter(dayCounter),
+                    currentLocation.longitude.toString(),
+                    currentLocation.longitude.toString()
+                )
+            }
+        }
+        binding.lastArrowTimeBTN.setOnClickListener {
+            dayCounter--
+            lifecycleScope.launch {
+                viewModel.getNextAndLastDayTimings(
+                    getDayCounter(dayCounter),
+                    currentLocation.longitude.toString(),
+                    currentLocation.longitude.toString()
+                )
+            }
         }
 
     }

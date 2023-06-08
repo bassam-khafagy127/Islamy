@@ -16,6 +16,7 @@ import com.bassamkhafgy.islamy.R
 import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
+import com.bassamkhafgy.islamy.utill.convertDateFormat
 import com.bassamkhafgy.islamy.utill.getDayCounter
 import com.bassamkhafgy.islamy.utill.getSystemDate
 import com.bassamkhafgy.islamy.utill.isInternetConnected
@@ -141,6 +142,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun addCallback(view: View) {
+        binding.dateTV.text = getSystemDate()
 
         binding.settingBtn.setOnClickListener {
             val action = HomeFragmentDirections.actionHomeFragmentToSplashFragment()
@@ -175,6 +177,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     currentLocation.longitude.toString()
                 )
             }
+            binding.dateTV.text = convertDateFormat(getDayCounter(dayCounter))
         }
         binding.lastArrowTimeBTN.setOnClickListener {
             dayCounter--
@@ -185,7 +188,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     currentLocation.longitude.toString()
                 )
             }
+            binding.dateTV.text = convertDateFormat(getDayCounter(dayCounter))
         }
-
     }
 }

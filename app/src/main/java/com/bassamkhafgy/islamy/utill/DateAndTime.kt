@@ -16,6 +16,13 @@ fun getSystemDate(): String {
     )
 }
 
+fun convertDateFormat(dateString: String): String {
+    val inputFormat = SimpleDateFormat("d-M-yyyy", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("yyyy, MMMM d", Locale.getDefault())
+
+    val date = inputFormat.parse(dateString)
+    return outputFormat.format(date)
+}
 
 //convert Api To response time 12hrs
 fun getTime12hrsFormat(time24: String): String {

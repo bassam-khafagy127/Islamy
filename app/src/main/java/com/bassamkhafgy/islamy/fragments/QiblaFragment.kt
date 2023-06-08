@@ -166,7 +166,7 @@ class QiblaFragment : Fragment(R.layout.fragment_qibla), SensorEventListener {
             "http://maps.google.com/maps?saddr=%f,%f(%s)&daddr=%f,%f (%s)",
             userLoc.latitude,
             userLoc.longitude,
-            resources.getString(R.string.arabic),
+            resources.getString(R.string.yourLocation),
             KAABA_LAT,
             KAABA_LONG,
             resources.getString(R.string.kaaba)

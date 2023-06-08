@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -169,18 +170,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             Navigation.findNavController(view).navigate(action)
         }
         binding.nextArrowTimeBTN.setOnClickListener {
-            dayCounter++
-            lifecycleScope.launch {
-                viewModel.getNextAndLastDayTimings(
-                    getDayCounter(dayCounter),
-                    currentLocation.longitude.toString(),
-                    currentLocation.longitude.toString()
-                )
-            }
-            binding.dateTV.text = convertDateFormat(getDayCounter(dayCounter))
+            getDayTimings("++")
         }
+
         binding.lastArrowTimeBTN.setOnClickListener {
+            getDayTimings("--")
+        }
+    }
+
+    private fun getDayTimings(counterType: String) {
+        if (counterType == "--") {
             dayCounter--
+        }
+        if (counterType == "++") {
+            dayCounter++
+        }
+        if (isInternetConnected(requireContext())) {
             lifecycleScope.launch {
                 viewModel.getNextAndLastDayTimings(
                     getDayCounter(dayCounter),
@@ -189,6 +194,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 )
             }
             binding.dateTV.text = convertDateFormat(getDayCounter(dayCounter))
-        }
+        } else Toast.makeText(
+            requireContext(),
+            "Please Check Your Connection",
+            Toast.LENGTH_LONG
+        ).show()
     }
 }

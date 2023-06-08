@@ -1,2 +1,2 @@
 # Islamy
-#->1-1- The process of calculating the next prayer and the process of fetching month data has not been completed
+#->1-1-Only the next prayer and the remaining time is not finish

@@ -1,6 +1,5 @@
 package com.bassamkhafgy.islamy.utill
 
-import android.util.Log
 import com.bassamkhafgy.islamy.data.local.PrayerTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter

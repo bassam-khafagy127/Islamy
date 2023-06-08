@@ -140,7 +140,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 PrayerTime("Maghrib", "${currentTimings.maghrib}"),
                 PrayerTime("Isha", "${currentTimings.isha}"),
             )
-//            Log.d("PrayerTime", getNextAzanTitle(prayerTimes, "9:40 PM").prayerName)
+
             Toast.makeText(
                 requireContext(),
                 getNextAzanTitle(prayerTimes).prayerName,
@@ -172,7 +172,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.settingBtn.setOnClickListener {
             val action = HomeFragmentDirections.actionHomeFragmentToSplashFragment()
             Navigation.findNavController(view).navigate(action)
-
         }
 
         //goto Qibla Fragment

@@ -80,22 +80,23 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     currentLocation.longitude.toString()
                 )
             }
+            //refresh address
+            lifecycleScope.launch {
+                delay(180)
+                currentAddress = viewModel.getUserAddress(
+                    currentLocation.latitude.toString(),
+                    currentLocation.longitude.toString()
+                )
+            }
         } else {
             //is not connected
-            lifecycleScope.launch {
+            lifecycleScope.launch (Dispatchers.IO){
                 viewModel.getCachedTimings()
             }
 
         }
 
-        //refresh address
-        lifecycleScope.launch {
-            delay(110)
-            currentAddress = viewModel.getUserAddress(
-                currentLocation.latitude.toString(),
-                currentLocation.longitude.toString()
-            )
-        }
+
 
         //        refresh timings
         lifecycleScope.launch(Dispatchers.IO) {

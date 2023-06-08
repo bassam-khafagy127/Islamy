@@ -4,6 +4,7 @@ import android.content.Context
 import android.location.Location
 import com.bassamkhafgy.islamy.data.database.IslamyAppDataBase
 import com.bassamkhafgy.islamy.data.local.PrayerSchedule
+import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.networking.TimeApiService
 import com.bassamkhafgy.islamy.utill.getAddressGeocoder
 import com.bassamkhafgy.islamy.utill.getLocationLatitudeLongitude
@@ -11,6 +12,7 @@ import com.bassamkhafgy.islamy.utill.getTime12hrsFormat
 import com.bassamkhafgy.islamy.utill.getTimeForApi
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.flow.SharedFlow
+import retrofit2.Response
 import javax.inject.Inject
 
 class HomeRepository @Inject constructor(
@@ -28,6 +30,14 @@ class HomeRepository @Inject constructor(
     private var currentTimings = PrayerSchedule(0, "", "", "", "", "", "")
 
     //getRemoteData
+//    suspend fun getRemoteTimings(
+//        day: String,
+//        latitude: String,
+//        longitude: String,
+//    ): Response<TimeResponse> {
+//        return timeApiService.getPrayerTimes(day, latitude, longitude)
+//    }
+
     suspend fun getRemoteTimings(
         day: String,
         latitude: String,
@@ -45,7 +55,7 @@ class HomeRepository @Inject constructor(
             currentTimings.isha = getTime12hrsFormat(prayerTimesResponse?.isha.toString())
 
             //drop old data
-            timingsDataBase.timingsDao().deleteOldData()
+            dropOldData()
             //insert to local database
             insertUpdateDayTimings(currentTimings)
             return currentTimings
@@ -74,11 +84,15 @@ class HomeRepository @Inject constructor(
         timingsDataBase.timingsDao().insertTimings(timings)
     }
 
+    //updateTimings
+    suspend fun dropOldData() {
+        timingsDataBase.timingsDao().deleteOldData()
+    }
+
     //getDataFromDataBase
     fun getCachedTimings(): PrayerSchedule {
         return timingsDataBase.timingsDao().getDayTimings()
     }
-
 
 
 }

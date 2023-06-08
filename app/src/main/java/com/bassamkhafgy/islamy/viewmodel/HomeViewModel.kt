@@ -4,7 +4,9 @@ import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bassamkhafgy.islamy.data.local.PrayerSchedule
+import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.repository.HomeRepository
+import com.bassamkhafgy.islamy.utill.getTime12hrsFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,15 +17,20 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val repository: HomeRepository) : ViewModel() {
 
-
+    private val currentTimings =
+        Timings(
+            "", " ",
+            "", "",
+            "", "",
+            "", "",
+            "", "",
+            ""
+        )
     private val _flowLocationData: MutableStateFlow<Location?> = MutableStateFlow(Location(""))
     val flowLocationData: StateFlow<Location?> = _flowLocationData
 
-    private val dummyTime =
-        PrayerSchedule(0, "4:10", "6:05 ", "12:54 PM", "4:30 PM", "7:55 PM", "9:27 PM")
-
-    private val _prayingTimingsFlow: MutableStateFlow<PrayerSchedule> = MutableStateFlow(dummyTime)
-    val prayingTimingsFlow: StateFlow<PrayerSchedule> = _prayingTimingsFlow
+    private val _prayingTimingsFlow: MutableStateFlow<Timings> = MutableStateFlow(currentTimings)
+    val prayingTimingsFlow: StateFlow<Timings> = _prayingTimingsFlow
 
     private val _liveAddressFlow: MutableStateFlow<String> = MutableStateFlow("")
     val liveAddressFlow: StateFlow<String> = _liveAddressFlow
@@ -42,6 +49,8 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     }
 
     //getRemoteTimings
+
+
     fun getRemoteTimings(
         day: String,
         latitude: String,
@@ -49,7 +58,21 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             val timingsResponse = repository.getRemoteTimings(day, latitude, longitude)
-            _prayingTimingsFlow.emit(timingsResponse)
+            _prayingTimingsFlow.emit(
+                Timings(
+                    timingsResponse.asr,
+                    timingsResponse.dhuhr,
+                    timingsResponse.fajr,
+                    "",
+                    "",
+                    timingsResponse.isha,
+                    "",
+                    timingsResponse.maghrib,
+                    "",
+                    timingsResponse.sunrise,
+                    ""
+                )
+            )
         }
     }
 
@@ -70,13 +93,84 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     //getFromDataBase
     fun getCachedTimings() {
         viewModelScope.launch(Dispatchers.IO) {
-            val timingsResponse = repository.getCachedTimings()
-            _prayingTimingsFlow.emit(timingsResponse)
+            val timingsCached = repository.getCachedTimings()
+            _prayingTimingsFlow.emit(
+                Timings(
+                    timingsCached.asr,
+                    timingsCached.dhuhr,
+                    timingsCached.fajr,
+                    "",
+                    "",
+                    timingsCached.isha,
+                    "",
+                    timingsCached.maghrib,
+                    "",
+                    timingsCached.sunrise,
+                    ""
+                )
+            )
         }
     }
 
 
 }
 
-
+//    suspend fun getRemoteTimings(
+//        day: String,
+//        latitude: String,
+//        longitude: String
+//    ) {
+//        val response = repository.getRemoteTimings(day, latitude, longitude)
+//
+//        if (response.isSuccessful) {
+//
+//            val prayerTimesResponse = response.body()?.data?.timings
+//
+//            currentTimings.fajr = getTime12hrsFormat(prayerTimesResponse?.fajr.toString())
+//            currentTimings.sunrise = getTime12hrsFormat(prayerTimesResponse?.sunrise.toString())
+//            currentTimings.dhuhr = getTime12hrsFormat(prayerTimesResponse?.dhuhr.toString())
+//            currentTimings.asr = getTime12hrsFormat(prayerTimesResponse?.asr.toString())
+//            currentTimings.maghrib = getTime12hrsFormat(prayerTimesResponse?.maghrib.toString())
+//            currentTimings.isha = getTime12hrsFormat(prayerTimesResponse?.isha.toString())
+//
+//            //emit data
+//            _prayingTimingsFlow.emit(currentTimings)
+//
+//            //drop old data
+//            repository.dropOldData()
+//
+//            //insert to local database
+//            repository.insertUpdateDayTimings(
+//                PrayerSchedule(
+//                    0,
+//                    currentTimings.fajr!!,
+//                    currentTimings.sunrise!!,
+//                    currentTimings.dhuhr!!,
+//                    currentTimings.asr!!,
+//                    currentTimings.maghrib!!,
+//                    currentTimings.isha!!
+//                )
+//            )
+//
+//        } else {
+//            //getDataBaseData
+//            val cachedTimings = repository.getCachedTimings()
+//            _prayingTimingsFlow.emit(
+//                Timings(
+//                    cachedTimings.asr,
+//                    cachedTimings.dhuhr,
+//                    cachedTimings.fajr,
+//                    "",
+//                    "",
+//                    cachedTimings.isha,
+//                    "",
+//                    cachedTimings.maghrib,
+//                    "",
+//                    cachedTimings.sunrise,
+//                    ""
+//                )
+//            )
+//
+//        }
+//    }
 

@@ -20,6 +20,7 @@ import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
 import com.bassamkhafgy.islamy.utill.convertDateFormat
+import com.bassamkhafgy.islamy.utill.getCurrentTime
 import com.bassamkhafgy.islamy.utill.getDayCounter
 import com.bassamkhafgy.islamy.utill.getNextAzanTitle
 import com.bassamkhafgy.islamy.utill.getSystemDate
@@ -115,24 +116,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 currentTimings.asr = it.asr
                 currentTimings.maghrib = it.maghrib
                 currentTimings.isha = it.isha
-
-                delay(100)
-                val prayerTimes = listOf(
-                    PrayerTime("Fajr", "${currentTimings.fajr}"),
-                    PrayerTime("Sunrise", "${currentTimings.sunrise}"),
-                    PrayerTime("Dhuhr", "${currentTimings.dhuhr}"),
-                    PrayerTime("Asr", "${currentTimings.asr}"),
-                    PrayerTime("Maghrib", "${currentTimings.maghrib}"),
-                    PrayerTime("Isha", "${currentTimings.isha}"),
-                    PrayerTime("Fajr", "${currentTimings.fajr}")
-                    // Next day's Fajr
-                )
-                prayerTimes.forEach { times ->
-                    Log.d("PrayeTime: ${times.prayerName}", "Time:" + times.time)
-                }
-
-                Log.d("PrayeTime: nextAzan", "Time:" + getNextAzanTitle(prayerTimes))
-
             }
 
 
@@ -145,6 +128,24 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     currentAddress = it
                 }
             }
+        }
+
+        lifecycleScope.launch {
+            delay(2000)
+            val prayerTimes = listOf(
+                PrayerTime("Fajr", "${currentTimings.fajr}"),
+                PrayerTime("Sunrise", "${currentTimings.sunrise}"),
+                PrayerTime("Dhuhr", "${currentTimings.dhuhr}"),
+                PrayerTime("Asr", "${currentTimings.asr}"),
+                PrayerTime("Maghrib", "${currentTimings.maghrib}"),
+                PrayerTime("Isha", "${currentTimings.isha}"),
+            )
+//            Log.d("PrayerTime", getNextAzanTitle(prayerTimes, "9:40 PM").prayerName)
+            Toast.makeText(
+                requireContext(),
+                getNextAzanTitle(prayerTimes).prayerName,
+                Toast.LENGTH_LONG
+            ).show()
         }
 
     }

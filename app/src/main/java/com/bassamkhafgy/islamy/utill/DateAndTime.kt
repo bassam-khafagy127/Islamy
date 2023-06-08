@@ -48,5 +48,11 @@ fun getDayCounter(daysToAdd: Int): String {
     return formattedDate
 }
 
+fun getCurrentTime(): String {
+    val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+    val currentTime = Calendar.getInstance().time
+    return timeFormat.format(currentTime)
+}
+
 
 

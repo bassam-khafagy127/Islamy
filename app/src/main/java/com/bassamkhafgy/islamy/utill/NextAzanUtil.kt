@@ -6,10 +6,10 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 
-fun getNextAzanTitle(prayerTimes: List<PrayerTime>, currentTime: String): PrayerTime {
+fun getNextAzanTitle(prayerTimes: List<PrayerTime>): PrayerTime {
     val timeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 
-    val currentCheckValue: LocalTime = LocalTime.parse(currentTime, timeFormatter)
+    val currentTimeValue: LocalTime = LocalTime.parse(getCurrentTime(), timeFormatter)
 
     val fajr: LocalTime = LocalTime.parse(prayerTimes[0].time, timeFormatter)
     val sunrise: LocalTime = LocalTime.parse(prayerTimes[1].time, timeFormatter)
@@ -18,20 +18,25 @@ fun getNextAzanTitle(prayerTimes: List<PrayerTime>, currentTime: String): Prayer
     val maghrib: LocalTime = LocalTime.parse(prayerTimes[4].time, timeFormatter)
     val isha: LocalTime = LocalTime.parse(prayerTimes[5].time, timeFormatter)
 
-    when {
-        currentCheckValue.isAfter(asr) -> {
-            Log.d("PrayeTime:", "$currentCheckValue currentCheckValue is after $asr asr")
 
-        }
-
-        currentCheckValue.isBefore(asr) -> {
-            Log.d("PrayeTime:", "$currentCheckValue currentCheckValue is before $asr asr")
-        }
-
-        currentCheckValue == asr -> {
-            Log.d("PrayeTime:", "Both is equal")
-        }
+    return if (currentTimeValue.isBefore(sunrise) && currentTimeValue.isAfter(fajr)) {
+        //sunrise
+        prayerTimes[1]
+    } else if (currentTimeValue.isBefore(dhuhr) && currentTimeValue.isAfter(sunrise)) {
+        //dhuhr
+        prayerTimes[2]
+    } else if (currentTimeValue.isBefore(asr) && currentTimeValue.isAfter(dhuhr)) {
+        //asr
+        prayerTimes[3]
+    } else if (currentTimeValue.isBefore(maghrib) && currentTimeValue.isAfter(asr)) {
+        //magribe
+        prayerTimes[4]
+    } else if (currentTimeValue.isBefore(isha) && currentTimeValue.isAfter(maghrib)) {
+        //isha
+        prayerTimes[5]
+    } else {
+        //fagr
+        prayerTimes[0]
     }
 
-    return prayerTimes[4]
 }

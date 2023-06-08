@@ -4,8 +4,10 @@ import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bassamkhafgy.islamy.data.local.PrayerSchedule
+import com.bassamkhafgy.islamy.data.local.PrayerTime
 import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.repository.HomeRepository
+import com.bassamkhafgy.islamy.utill.getNextAzanTitle
 import com.bassamkhafgy.islamy.utill.getTime12hrsFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +36,10 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
 
     private val _liveAddressFlow: MutableStateFlow<String> = MutableStateFlow("")
     val liveAddressFlow: StateFlow<String> = _liveAddressFlow
+
+    private val _nextPrayerTitle: MutableStateFlow<PrayerTime> =
+        MutableStateFlow(PrayerTime("", ""))
+    val nextPrayerTitle: StateFlow<PrayerTime> = _nextPrayerTitle
 
 
     //GetLocationLatLong
@@ -130,6 +136,13 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
                     ""
                 )
             )
+        }
+    }
+
+    //getNextPrayer Title
+    fun getNextPrayer(prayers: List<PrayerTime>) {
+        viewModelScope.launch {
+            _nextPrayerTitle.emit(repository.getNextPrayer(prayers))
         }
     }
 

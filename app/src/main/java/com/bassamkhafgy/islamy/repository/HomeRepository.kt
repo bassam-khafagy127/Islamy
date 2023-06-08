@@ -4,17 +4,24 @@ import android.content.Context
 import android.location.Location
 import com.bassamkhafgy.islamy.data.database.IslamyAppDataBase
 import com.bassamkhafgy.islamy.data.local.PrayerSchedule
+import com.bassamkhafgy.islamy.data.local.PrayerTime
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.networking.TimeApiService
 import com.bassamkhafgy.islamy.utill.getAddressGeocoder
 import com.bassamkhafgy.islamy.utill.getLocationLatitudeLongitude
+import com.bassamkhafgy.islamy.utill.getNextAzanTitle
 import com.bassamkhafgy.islamy.utill.getTime12hrsFormat
 import com.bassamkhafgy.islamy.utill.getTimeForApi
 import com.google.android.gms.location.FusedLocationProviderClient
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
 import retrofit2.Response
 import javax.inject.Inject
 
+@OptIn(DelicateCoroutinesApi::class)
 class HomeRepository @Inject constructor(
     private val context: Context,
     private var fusedLocationProviderClient: FusedLocationProviderClient,
@@ -22,21 +29,13 @@ class HomeRepository @Inject constructor(
     private val timingsDataBase: IslamyAppDataBase
 ) {
 
+
     //getLocation Coordination witGPs
     suspend fun getLocationCoordination(): SharedFlow<Location> {
         return getLocationLatitudeLongitude(fusedLocationProviderClient)
     }
 
     private var currentTimings = PrayerSchedule(0, "", "", "", "", "", "")
-
-    //getRemoteData
-//    suspend fun getRemoteTimings(
-//        day: String,
-//        latitude: String,
-//        longitude: String,
-//    ): Response<TimeResponse> {
-//        return timeApiService.getPrayerTimes(day, latitude, longitude)
-//    }
 
     suspend fun getRemoteTimings(
         day: String,
@@ -115,4 +114,8 @@ class HomeRepository @Inject constructor(
     }
 
 
+    //getNextPrayer Title
+    fun getNextPrayer(prayers: List<PrayerTime>): PrayerTime {
+        return getNextAzanTitle(prayers)
+    }
 }

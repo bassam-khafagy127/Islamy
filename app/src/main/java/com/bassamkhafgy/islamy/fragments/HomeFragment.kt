@@ -131,23 +131,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
 
         lifecycleScope.launch {
-            delay(2000)
+            delay(1500)
             val prayerTimes = listOf(
-                PrayerTime("Fajr", "${currentTimings.fajr}"),
-                PrayerTime("Sunrise", "${currentTimings.sunrise}"),
-                PrayerTime("Dhuhr", "${currentTimings.dhuhr}"),
-                PrayerTime("Asr", "${currentTimings.asr}"),
-                PrayerTime("Maghrib", "${currentTimings.maghrib}"),
-                PrayerTime("Isha", "${currentTimings.isha}"),
+                PrayerTime(resources.getString(R.string.fagrTime), "${currentTimings.fajr}"),
+                PrayerTime(resources.getString(R.string.shroukTime), "${currentTimings.sunrise}"),
+                PrayerTime(resources.getString(R.string.zohrTime), "${currentTimings.dhuhr}"),
+                PrayerTime(resources.getString(R.string.asrTime), "${currentTimings.asr}"),
+                PrayerTime(resources.getString(R.string.magrbeTime), "${currentTimings.maghrib}"),
+                PrayerTime(resources.getString(R.string.isha_time), "${currentTimings.isha}"),
             )
-
-            Toast.makeText(
-                requireContext(),
-                getNextAzanTitle(prayerTimes).prayerName,
-                Toast.LENGTH_LONG
-            ).show()
+            viewModel.getNextPrayer(prayerTimes)
         }
-
     }
 
 

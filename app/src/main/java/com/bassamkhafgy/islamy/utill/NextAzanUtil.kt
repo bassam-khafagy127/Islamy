@@ -3,10 +3,11 @@ package com.bassamkhafgy.islamy.utill
 import com.bassamkhafgy.islamy.data.local.PrayerTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
 fun getNextAzanTitle(prayerTimes: List<PrayerTime>): PrayerTime {
-    val timeFormatter = DateTimeFormatter.ofPattern("h:mm a")
+    val timeFormatter = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
 
     val currentTimeValue: LocalTime = LocalTime.parse(getCurrentTime(), timeFormatter)
 

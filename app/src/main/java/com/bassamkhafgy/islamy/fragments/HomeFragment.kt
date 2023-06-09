@@ -186,6 +186,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             )
             Navigation.findNavController(view).navigate(action)
         }
+
         binding.nextArrowTimeBTN.setOnClickListener {
             getDayTimings("++")
         }

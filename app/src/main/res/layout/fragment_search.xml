@@ -5,6 +5,9 @@
 
     <data>
 
+        <variable
+            name="viewModel"
+            type="com.bassamkhafgy.islamy.viewmodel.SearchViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -96,8 +99,9 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginBottom="6dp"
                     android:maxLength="30"
+                    android:minWidth="20dp"
                     android:singleLine="true"
-                    android:text="@string/dummyAddress"
+                    android:text="@{viewModel.addressLiveData.location}"
                     android:textAlignment="center"
                     android:textColor="@color/g_icon_tint"
                     android:textStyle="bold"
@@ -106,10 +110,10 @@
                     app:layout_constraintTop_toBottomOf="@id/miladyDate" />
 
                 <View
-                    android:id="@+id/topPrayerTimeGuideLineView"
+                    android:id="@+id/topPrayerTimeGuideLineViewSearch"
                     android:layout_width="match_parent"
                     android:layout_height="4dp"
-                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toTopOf="@id/fagrCardView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/addressTV" />
@@ -126,7 +130,7 @@
                     app:layout_constraintBottom_toTopOf="@id/shroukCardView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/topPrayerTimeGuideLineView">
+                    app:layout_constraintTop_toBottomOf="@id/topPrayerTimeGuideLineViewSearch">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -150,7 +154,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight=".5"
                             android:gravity="center"
-                            android:text="4:10"
+                            android:text="@{viewModel.prayingTimingsFlow.fajr}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -163,10 +167,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
-                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="6dp"
                     android:elevation="10dp"
                     app:cardCornerRadius="8dp"
+                    app:layout_constraintBottom_toTopOf="@id/zohrCardView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/fagrCardView">
@@ -193,7 +197,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight=".5"
                             android:gravity="center"
-                            android:text="6:10"
+                            android:text="@{viewModel.prayingTimingsFlow.sunrise}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -236,7 +240,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight=".5"
                             android:gravity="center"
-                            android:text="1:12"
+                            android:text="@{viewModel.prayingTimingsFlow.dhuhr}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -279,7 +283,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight=".5"
                             android:gravity="center"
-                            android:text="4:5"
+                            android:text="@{viewModel.prayingTimingsFlow.asr}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -322,7 +326,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight=".5"
                             android:gravity="center"
-                            android:text="8:50"
+                            android:text="@{viewModel.prayingTimingsFlow.maghrib}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -365,7 +369,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight=".5"
                             android:gravity="center"
-                            android:text="9:50"
+                            android:text="@{viewModel.prayingTimingsFlow.isha}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -394,13 +398,13 @@
             app:layout_constraintTop_toBottomOf="@id/topSearchGuideLine" />
 
         <EditText
-            android:textAlignment="center"
             android:id="@+id/AddressTypingEd"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="6dp"
             android:backgroundTint="@color/g_line"
             android:maxLength="30"
+            android:textAlignment="center"
             android:textColor="@color/white"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/searchBTN"

@@ -13,13 +13,6 @@ import androidx.navigation.fragment.navArgs
 import com.bassamkhafgy.islamy.R
 import com.bassamkhafgy.islamy.databinding.FragmentSearchBinding
 import com.bassamkhafgy.islamy.viewmodel.SearchViewModel
-import com.bassamkhafgy.islamy.viewmodel.addressLiveData
-import com.bassamkhafgy.islamy.viewmodel.remoteAsrLiveData
-import com.bassamkhafgy.islamy.viewmodel.remoteDuhrLiveData
-import com.bassamkhafgy.islamy.viewmodel.remoteFagrLiveData
-import com.bassamkhafgy.islamy.viewmodel.remoteIshaLiveData
-import com.bassamkhafgy.islamy.viewmodel.remoteMagribeLiveData
-import com.bassamkhafgy.islamy.viewmodel.remoteSunriseLiveData
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -28,8 +21,8 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private lateinit var binding: FragmentSearchBinding
     private val viewModel by viewModels<SearchViewModel>()
-    private val searchArgs: SearchFragmentArgs by navArgs()
 
+    private val searchArgs: SearchFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,48 +41,22 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         }
 
         lifecycleScope.launch {
-            remoteFagrLiveData.collect {
-                binding.fagrTextView.text = it
+            viewModel.prayingTimingsFlow.collect {
+                binding.fagrTextView.text = it.fajr
+                binding.shroukTextView.text = it.sunrise
+                binding.zohrCardTextView.text = it.dhuhr
+                binding.asrCardTextView.text = it.asr
+                binding.magrebTextView.text = it.maghrib
+                binding.ishaTextView.text = it.isha
             }
 
         }
-
         lifecycleScope.launch {
-            remoteSunriseLiveData.collect {
-                binding.shroukTextView.text = it
-            }
-        }
-
-        lifecycleScope.launch {
-            remoteDuhrLiveData.collect {
-                binding.zohrCardTextView.text = it
-            }
-        }
-
-        lifecycleScope.launch {
-            remoteAsrLiveData.collect {
-                binding.asrCardTextView.text = it
-            }
-        }
-
-        lifecycleScope.launch {
-            remoteMagribeLiveData.collect {
-                binding.magrebTextView.text = it
-            }
-        }
-
-        lifecycleScope.launch {
-            remoteIshaLiveData.collect {
-                binding.ishaTextView.text = it
-            }
-        }
-
-        lifecycleScope.launch {
-            addressLiveData.collect {
+            viewModel.addressLiveData.collect {
                 binding.addressTV.text = it.location
+
             }
         }
-
         lifecycleScope.launch {
             binding.miladyDate.text = viewModel.getDay()
         }
@@ -104,7 +71,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             val addressList: List<Address>?
             try {
                 addressList =
-                    geoCoder.getFromLocationName(binding.AddressTypingEd?.text.toString(), 4)
+                    geoCoder.getFromLocationName(binding.AddressTypingEd.text.toString(), 4)
                 if (addressList != null) {
                     val latitude = addressList[0].latitude
                     val longitude = addressList[0].longitude

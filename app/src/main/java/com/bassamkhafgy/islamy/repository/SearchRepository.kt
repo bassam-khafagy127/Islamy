@@ -13,8 +13,8 @@ class SearchRepository @Inject constructor(
     private val context: Context
 ) {
 
-    // getRemoteNextLastDayTimings
-    suspend fun getTodayTimings(
+    // getRemoteTimings
+    suspend fun getRemoteTimings(
         day: String,
         latitude: String,
         longitude: String

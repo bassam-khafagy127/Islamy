@@ -51,7 +51,7 @@
             android:id="@+id/qiblaDateTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="12dp"
             android:drawablePadding="5dp"
             android:elevation="10dp"
             android:gravity="center_vertical"
@@ -59,9 +59,8 @@
             android:textSize="20sp"
             android:textStyle="bold"
             app:drawableStartCompat="@drawable/round_calendar_month_24"
-
             app:layout_constraintEnd_toStartOf="@id/rightQiblaGuideLine"
-            app:layout_constraintHorizontal_bias="0.02"
+            app:layout_constraintHorizontal_bias="0.013"
             app:layout_constraintStart_toEndOf="@id/leftQiblaGuideLine"
             app:layout_constraintTop_toBottomOf="@id/topQiblaTextGuideLine" />
 
@@ -74,13 +73,13 @@
             android:elevation="10dp"
             android:gravity="center_vertical"
             android:text="@string/searchForCity"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             app:drawableStartCompat="@drawable/search_24"
-            app:layout_constraintEnd_toStartOf="@id/rightQiblaGuideLine"
-            app:layout_constraintHorizontal_bias="0.02"
-            app:layout_constraintTop_toBottomOf="@id/topQiblaTextGuideLine"
-            app:drawableTint="@color/out_compass" />
+            app:drawableTint="@color/out_compass"
+            app:layout_constraintEnd_toStartOf="@+id/rightQiblaGuideLine"
+            app:layout_constraintStart_toEndOf="@+id/qiblaDateTv"
+            app:layout_constraintTop_toBottomOf="@id/topQiblaTextGuideLine" />
 
         <TextView
             android:id="@+id/qiblaAddressTv"

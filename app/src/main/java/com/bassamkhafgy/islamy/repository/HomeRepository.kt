@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 import javax.inject.Inject
 
-@OptIn(DelicateCoroutinesApi::class)
 class HomeRepository @Inject constructor(
     private val context: Context,
     private var fusedLocationProviderClient: FusedLocationProviderClient,

@@ -483,12 +483,12 @@
             tools:text="@string/dummyAddress" />
 
         <ImageView
-            android:id="@+id/settingBtn"
+            android:id="@+id/searchBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:minWidth="35dp"
             android:minHeight="35dp"
-            android:src="@drawable/setting_ic"
+            android:src="@drawable/search_24"
             app:layout_constraintBottom_toBottomOf="@id/topLocationBtn"
             app:layout_constraintEnd_toStartOf="@id/rightHomeGuideLine"
             app:layout_constraintTop_toTopOf="@id/topLocationBtn" />

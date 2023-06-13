@@ -9,6 +9,7 @@ import android.util.Log
 import com.bassamkhafgy.islamy.utill.Constants.Location.CAIRO_LAT
 import com.bassamkhafgy.islamy.utill.Constants.Location.CAIRO_LONG
 import com.google.android.gms.location.FusedLocationProviderClient
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,6 +32,7 @@ fun getAddressGeocoder(context: Context, latitude: Double, longitude: Double): S
     return null
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 @SuppressLint("MissingPermission")
 suspend fun getLocationLatitudeLongitude(fusedLocationProviderClient: FusedLocationProviderClient): MutableSharedFlow<Location> {
     val liveLocation: MutableSharedFlow<Location> = MutableSharedFlow()

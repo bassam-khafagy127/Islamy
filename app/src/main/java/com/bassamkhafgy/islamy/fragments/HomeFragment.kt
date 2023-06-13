@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,9 +19,7 @@ import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
 import com.bassamkhafgy.islamy.utill.convertDateFormat
-import com.bassamkhafgy.islamy.utill.getCurrentTime
 import com.bassamkhafgy.islamy.utill.getDayCounter
-import com.bassamkhafgy.islamy.utill.getNextAzanTitle
 import com.bassamkhafgy.islamy.utill.getSystemDate
 import com.bassamkhafgy.islamy.utill.isInternetConnected
 import com.bassamkhafgy.islamy.viewmodel.HomeViewModel
@@ -155,16 +152,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             ActivityCompat.requestPermissions(
                 requireActivity(),
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                Constants.Location.LOCATION_PERMESSION_CODE
+                Constants.Location.LOCATION_PERMISSION_CODE
             )
         }
     }
 
+    //system interactive
     private fun addCallback(view: View) {
         binding.dateTV.text = getSystemDate()
 
-        binding.settingBtn.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToSplashFragment()
+        binding.searchBtn.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment(
+                currentAddress
+            )
             Navigation.findNavController(view).navigate(action)
         }
 
@@ -176,13 +176,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 currentLocation.latitude.toFloat(),
                 currentLocation.longitude.toFloat(),
                 currentLocation.altitude.toFloat()
-            )
-            Navigation.findNavController(view).navigate(action)
-        }
-
-        binding.topLocationBtn.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment(
-                currentAddress
             )
             Navigation.findNavController(view).navigate(action)
         }

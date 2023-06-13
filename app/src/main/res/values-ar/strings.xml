@@ -15,7 +15,7 @@
     <string name="isha_time">العشاء</string>
     <string name="qibla_direction">إتجاه القبلة</string>
     <string name="latlongDummy">خط الطول:21.5515\nخط العرض 22.335</string>
-    <string name="searchForCity">بحث عن مدينة أخري</string>
+    <string name="searchForCity">بحث عن مدينة</string>
     <string name="show_on_map">إظهار علي الخريطة</string>
     <string name="hijri_date">التاريخ الهجري:</string>
     <string name="miladiDate">التاريخ الميلادي:</string>

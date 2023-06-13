@@ -1,12 +1,14 @@
 package com.bassamkhafgy.islamy.utill
 
+import com.bassamkhafgy.islamy.R
+
 object Constants {
     object Location {
-        val LOCATION_TAG = "LocationSA"
-        val LOCATION_PERMESSION_CODE = 121
+        const val LOCATION_TAG = "LocationSA"
+        const val LOCATION_PERMISSION_CODE = 121
 
-        val KAABA_LAT = 21.422487
-        val KAABA_LONG = 39.826206
+        const val KAABA_LAT = 21.422487
+        const val KAABA_LONG = 39.826206
         const val CAIRO_LAT = 30.033333
         const val CAIRO_LONG = 31.233334
     }
@@ -14,20 +16,29 @@ object Constants {
     const val ERROR_TAG = "ERROR_TAG"
 
     object Language {
-        val ARABIC_LANGUAGE = "ar"
-        val ENGLISH_LANGUAGE = "en"
+        const val ARABIC_LANGUAGE = "ar"
+        const val ENGLISH_LANGUAGE = "en"
     }
 
     object DATABASE {
         const val PRAYER_TABLE_NAME = "PRAYER TIMES"
-        const val ERROR_TAG_DATABASE = "ERROR_TAG_DATABASE"
         const val LOCATION_TABLE_NAME = "LAST LOCATION"
         const val TIMINGS_DATABASE_NAME = "PRAYER TIMES DATABASE"
 
     }
 
-//    object PrayerTimes {
-//        //"http://api.aladhan.com/v1/timings/1-6-2023?latitude=30.923512&longitude=31.622066&method=2"
-//        // const val BaseUrl="http://api.aladhan.com/v1/timings/1-6-2023?latitude=30.923512&longitude=31.622066&method=2"
-//    }
+
+    object LANGUAGE_NAVIGATION {
+        const val LANGUAGE_SHARED_PREFERENCE = "LANGUAGE_SHARED_PREFERENCE"
+
+
+        const val IS_BUTTON_CLICKED =
+            "IS_BUTTON_CLICKED"
+
+        const val WHICH_LANGUAGE_BUTTON =
+            "WHICH_LANGUAGE_BUTTON"
+
+
+        val HOME_FRAGMENT = R.id.action_splashFragment_to_homeFragment
+    }
 }

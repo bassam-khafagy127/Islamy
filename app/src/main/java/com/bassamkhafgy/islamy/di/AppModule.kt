@@ -1,10 +1,12 @@
 package com.bassamkhafgy.islamy.di
 
+import android.app.Application
 import android.content.Context
 import com.bassamkhafgy.islamy.data.database.IslamyAppDataBase
 import com.bassamkhafgy.islamy.networking.TimeApiService
 import com.bassamkhafgy.islamy.repository.HomeRepository
 import com.bassamkhafgy.islamy.repository.SearchRepository
+import com.bassamkhafgy.islamy.utill.Constants.LANGUAGE_NAVIGATION.LANGUAGE_SHARED_PREFERENCE
 
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -48,4 +50,9 @@ object AppModule {
     fun provideFusedLocationProviderClient(@ApplicationContext appContext: Context): FusedLocationProviderClient {
         return LocationServices.getFusedLocationProviderClient(appContext)
     }
+
+    @Provides
+    fun provideIntroductionViewModel(application: Application) =
+        application.getSharedPreferences(LANGUAGE_SHARED_PREFERENCE, Context.MODE_PRIVATE)
+
 }

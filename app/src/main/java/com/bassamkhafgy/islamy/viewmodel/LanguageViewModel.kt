@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bassamkhafgy.islamy.utill.Constants.LANGUAGE_NAVIGATION.HOME_FRAGMENT
-import com.bassamkhafgy.islamy.utill.Constants.LANGUAGE_NAVIGATION.IS_BUTTON_CLICKED
+import com.bassamkhafgy.islamy.utill.Constants.LANGUAGE_NAVIGATION.FIRST_LAUNCH_IS_BUTTON_CLICKED
 import com.bassamkhafgy.islamy.utill.Constants.LANGUAGE_NAVIGATION.WHICH_LANGUAGE_BUTTON
 import com.bassamkhafgy.islamy.utill.Constants.Language.ARABIC_LANGUAGE
 import com.bassamkhafgy.islamy.utill.Constants.Language.ENGLISH_LANGUAGE
@@ -27,7 +27,7 @@ class LanguageViewModel @Inject constructor(
 
 
     init {
-        val isButtonClicked = sharedPreferences.getBoolean(IS_BUTTON_CLICKED, false)
+        val isButtonClicked = sharedPreferences.getBoolean(FIRST_LAUNCH_IS_BUTTON_CLICKED, false)
 
         val whichLanguage = sharedPreferences.getString(WHICH_LANGUAGE_BUTTON, ENGLISH_LANGUAGE)
 
@@ -42,7 +42,7 @@ class LanguageViewModel @Inject constructor(
     }
 
     fun isButtonClickedFunction(language: String) {
-        sharedPreferences.edit().putBoolean(IS_BUTTON_CLICKED, true).apply()
+        sharedPreferences.edit().putBoolean(FIRST_LAUNCH_IS_BUTTON_CLICKED, true).apply()
         sharedPreferences.edit().putString(WHICH_LANGUAGE_BUTTON, language).apply()
     }
 

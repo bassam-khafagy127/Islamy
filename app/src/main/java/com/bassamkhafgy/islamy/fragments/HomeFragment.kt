@@ -128,7 +128,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
 
         lifecycleScope.launch {
-            delay(1500)
+            delay(3000)
             val prayerTimes = listOf(
                 PrayerTime(resources.getString(R.string.fagrTime), "${currentTimings.fajr}"),
                 PrayerTime(resources.getString(R.string.shroukTime), "${currentTimings.sunrise}"),

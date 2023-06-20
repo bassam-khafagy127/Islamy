@@ -7,6 +7,7 @@ import com.bassamkhafgy.islamy.data.local.PrayerSchedule
 import com.bassamkhafgy.islamy.data.local.PrayerTime
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.networking.TimeApiService
+import com.bassamkhafgy.islamy.utill.Resource
 import com.bassamkhafgy.islamy.utill.getAddressGeocoder
 import com.bassamkhafgy.islamy.utill.getLocationLatitudeLongitude
 import com.bassamkhafgy.islamy.utill.getNextAzanTitle
@@ -30,7 +31,7 @@ class HomeRepository @Inject constructor(
 
 
     //getLocation Coordination witGPs
-    suspend fun getLocationCoordination(): SharedFlow<Location> {
+    suspend fun getLocationCoordination(): SharedFlow<Resource<Location>> {
         return getLocationLatitudeLongitude(fusedLocationProviderClient)
     }
 

@@ -32,8 +32,8 @@ object Constants {
         const val LANGUAGE_SHARED_PREFERENCE = "LANGUAGE_SHARED_PREFERENCE"
 
 
-        const val FIRST_LAUNCH_IS_BUTTON_CLICKED =
-            "IS_BUTTON_CLICKED"
+        const val IS_FIRST_LAUNCH_BUTTON_CLICKED =
+            "IS_FIRST_LAUNCH_BUTTON_CLICKED"
 
         const val WHICH_LANGUAGE_BUTTON =
             "WHICH_LANGUAGE_BUTTON"

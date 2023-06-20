@@ -34,19 +34,21 @@ fun getAddressGeocoder(context: Context, latitude: Double, longitude: Double): S
 
 @OptIn(DelicateCoroutinesApi::class)
 @SuppressLint("MissingPermission")
-suspend fun getLocationLatitudeLongitude(fusedLocationProviderClient: FusedLocationProviderClient): MutableSharedFlow<Location> {
-    val liveLocation: MutableSharedFlow<Location> = MutableSharedFlow()
+suspend fun getLocationLatitudeLongitude(fusedLocationProviderClient: FusedLocationProviderClient): MutableSharedFlow<Resource<Location>> {
+
+    val liveLocation: MutableSharedFlow<Resource<Location>> = MutableSharedFlow()
     val location = fusedLocationProviderClient.lastLocation
+
+    GlobalScope.launch {
+        liveLocation.emit(Resource.Loading())
+    }
     location.addOnSuccessListener {
         GlobalScope.launch(Dispatchers.Unconfined) {
-            liveLocation.emit(it)
+            liveLocation.emit(Resource.Success(it))
         }
     }.addOnFailureListener {
-        val location = Location("")
-        location.latitude = CAIRO_LAT
-        location.longitude = CAIRO_LONG
         GlobalScope.launch(Dispatchers.Unconfined) {
-            liveLocation.emit(location)
+            liveLocation.emit(Resource.Error(it.localizedMessage))
         }
         Log.e(Constants.ERROR_TAG + "ADDRESS_GEOCODER LAT LONG", it.message.toString())
     }

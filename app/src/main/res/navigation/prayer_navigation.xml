@@ -73,8 +73,6 @@
         <argument
             android:name="date_args"
             app:argType="string" />
-
-
         <action
             android:id="@+id/action_qiblaFragment_to_searchFragment"
             app:destination="@id/searchFragment"

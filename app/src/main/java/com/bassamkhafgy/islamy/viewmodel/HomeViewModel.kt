@@ -7,6 +7,7 @@ import com.bassamkhafgy.islamy.data.local.PrayerSchedule
 import com.bassamkhafgy.islamy.data.local.PrayerTime
 import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.repository.HomeRepository
+import com.bassamkhafgy.islamy.utill.Resource
 import com.bassamkhafgy.islamy.utill.getNextAzanTitle
 import com.bassamkhafgy.islamy.utill.getTime12hrsFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,8 +29,10 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
             "", "",
             ""
         )
-    private val _flowLocationData: MutableStateFlow<Location?> = MutableStateFlow(Location(""))
-    val flowLocationData: StateFlow<Location?> = _flowLocationData
+
+    private val _flowLocationData: MutableStateFlow<Resource<Location>> =
+        MutableStateFlow(Resource.Unspecified())
+    val flowLocationData: StateFlow<Resource<Location>> = _flowLocationData
 
     private val _prayingTimingsFlow: MutableStateFlow<Timings> = MutableStateFlow(currentTimings)
     val prayingTimingsFlow: StateFlow<Timings> = _prayingTimingsFlow

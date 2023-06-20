@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,15 +19,20 @@ import com.bassamkhafgy.islamy.data.local.PrayerTime
 import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
+import com.bassamkhafgy.islamy.utill.Resource
 import com.bassamkhafgy.islamy.utill.convertDateFormat
 import com.bassamkhafgy.islamy.utill.getDayCounter
+import com.bassamkhafgy.islamy.utill.getNextAzanTitle
 import com.bassamkhafgy.islamy.utill.getSystemDate
 import com.bassamkhafgy.islamy.utill.isInternetConnected
 import com.bassamkhafgy.islamy.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -59,88 +65,88 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding = FragmentHomeBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+        viewModel.getLocationCoordination()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         addCallback(view)
-        //location live data
-        lifecycleScope.launch {
-            viewModel.flowLocationData.collect {
-                currentLocation.latitude = it!!.latitude
-                currentLocation.longitude = it.longitude
-                currentLocation.altitude = it.altitude
-            }
-        }
 
-        //getRemoteData
         if (isInternetConnected(requireContext())) {
-            //is connected
-            lifecycleScope.launch {
-                delay(125)
-                viewModel.getRemoteTimings(
-                    viewModel.getTimeForApi(),
-                    currentLocation.latitude.toString(),
-                    currentLocation.longitude.toString()
-                )
-            }
-
-            //refresh address
-            lifecycleScope.launch {
-                delay(180)
-                currentAddress = viewModel.getUserAddress(
-                    currentLocation.latitude.toString(),
-                    currentLocation.longitude.toString()
-                )
-            }
-
+            lifecycleScope.launch { isInterNetConnectedTimings() }
         } else {
-            //is not connected
-            lifecycleScope.launch(Dispatchers.IO) {
-                viewModel.getCachedTimings()
-            }
-
-        }
-
-
-        //        refresh timings
-        lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.prayingTimingsFlow.collect {
-                currentTimings.fajr = it.fajr
-                currentTimings.sunrise = it.sunrise
-                currentTimings.dhuhr = it.dhuhr
-                currentTimings.asr = it.asr
-                currentTimings.maghrib = it.maghrib
-                currentTimings.isha = it.isha
-            }
-
-
-        }
-
-        //getCurrentUserAddress
-        lifecycleScope.launch {
             lifecycleScope.launch {
-                viewModel.liveAddressFlow.collect {
-                    currentAddress = it
+                isInterNetNotConnectedTimings()
+            }
+        }
+    }
+
+    private suspend fun isInterNetConnectedTimings() {
+        viewModel.flowLocationData.collect { locationState ->
+//            currentLocation.latitude = it!!.latitude
+//            currentLocation.altitude = it.altitude
+//            currentLocation.longitude = it.longitude
+            when (locationState) {
+                is Resource.Error -> {
+                    Toast.makeText(requireContext(), "${locationState.message}", Toast.LENGTH_LONG)
+                        .show()
+                }
+
+                is Resource.Loading -> {
+                    Log.e(Constants.ERROR_TAG + "ADDRESS_GEOCODER LAT LONG", "Lat:Long Loading")
+                }
+
+                is Resource.Success -> {
+                    //getAddress
+                    viewModel.getUserAddress(
+                        locationState.data?.latitude.toString(),
+                        locationState.data?.longitude.toString()
+                    )
+
+                    //getRemoteTimings
+                    lifecycleScope.launch {
+                        viewModel.getRemoteTimings(
+                            viewModel.getTimeForApi(),
+                            locationState.data?.latitude.toString(),
+                            locationState.data?.longitude.toString()
+                        )
+                    }
+                    //getNextPrayName
+                    nextPrayTitle()
+                }
+
+                is Resource.Unspecified -> {
+                    Log.e(Constants.ERROR_TAG + "ADDRESS_GEOCODER LAT LONG", "Lat:Long Unspecified")
                 }
             }
         }
 
-        lifecycleScope.launch {
-            delay(3000)
+    }
+
+    private suspend fun isInterNetNotConnectedTimings() {
+        //getLocalTimingsFromDataBase
+        viewModel.getCachedTimings()
+        //getNextPrayName
+        nextPrayTitle()
+    }
+
+    //getNextPray
+    private suspend fun nextPrayTitle() {
+        delay(600)
+        viewModel.prayingTimingsFlow.collect {
             val prayerTimes = listOf(
-                PrayerTime(resources.getString(R.string.fagrTime), "${currentTimings.fajr}"),
-                PrayerTime(resources.getString(R.string.shroukTime), "${currentTimings.sunrise}"),
-                PrayerTime(resources.getString(R.string.zohrTime), "${currentTimings.dhuhr}"),
-                PrayerTime(resources.getString(R.string.asrTime), "${currentTimings.asr}"),
-                PrayerTime(resources.getString(R.string.magrbeTime), "${currentTimings.maghrib}"),
-                PrayerTime(resources.getString(R.string.isha_time), "${currentTimings.isha}"),
+                PrayerTime(resources.getString(R.string.fagrTime), "${it.fajr}"),
+                PrayerTime(resources.getString(R.string.shroukTime), "${it.sunrise}"),
+                PrayerTime(resources.getString(R.string.zohrTime), "${it.dhuhr}"),
+                PrayerTime(resources.getString(R.string.asrTime), "${it.asr}"),
+                PrayerTime(resources.getString(R.string.magrbeTime), "${it.maghrib}"),
+                PrayerTime(resources.getString(R.string.isha_time), "${it.isha}"),
             )
             viewModel.getNextPrayer(prayerTimes)
         }
     }
-
 
     private fun checkPermission() {
         if (ActivityCompat.checkSelfPermission(

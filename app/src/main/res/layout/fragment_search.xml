@@ -100,7 +100,7 @@
                     android:maxLength="30"
                     android:minWidth="20dp"
                     android:singleLine="true"
-                    android:text="@{viewModel.addressLiveData.location}"
+                    android:text="@{viewModel.addressLiveData}"
                     android:textAlignment="center"
                     android:textColor="@color/g_icon_tint"
                     android:textStyle="bold"

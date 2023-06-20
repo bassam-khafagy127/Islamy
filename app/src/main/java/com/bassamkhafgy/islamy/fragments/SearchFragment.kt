@@ -54,7 +54,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         }
         lifecycleScope.launch {
             viewModel.addressLiveData.collect {
-                binding.addressTV.text = it.location
+                binding.addressTV.text = it
 
             }
         }

@@ -2,11 +2,9 @@ package com.bassamkhafgy.islamy.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bassamkhafgy.islamy.data.local.LastLocation
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.repository.SearchRepository
-import com.bassamkhafgy.islamy.utill.getTime12hrsFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,8 +32,8 @@ class SearchViewModel @Inject constructor(private val repository: SearchReposito
     private val _prayingTimingsFlow: MutableStateFlow<Timings> = MutableStateFlow(currentTimings)
     val prayingTimingsFlow: StateFlow<Timings> = _prayingTimingsFlow
 
-    private val _addressLiveData = MutableStateFlow(LastLocation(0, ""))
-    val addressLiveData: StateFlow<LastLocation> = _addressLiveData
+    private val _addressLiveData = MutableStateFlow("")
+    val addressLiveData: StateFlow<String> = _addressLiveData
 
     fun getTodayRemoteTimings(day: String, latitude: String, longitude: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -62,7 +60,7 @@ class SearchViewModel @Inject constructor(private val repository: SearchReposito
                 address =
                     repository.getAddress(latitude.toDouble(), longitude.toDouble()).toString()
 
-                _addressLiveData.emit(LastLocation(0, address))
+                _addressLiveData.emit(address)
             } else {
 //                response IsFaild
 

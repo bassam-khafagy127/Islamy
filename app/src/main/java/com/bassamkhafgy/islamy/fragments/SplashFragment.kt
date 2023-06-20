@@ -64,12 +64,14 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
 
         binding.arabicBtn.setOnClickListener {
             //   SetLang ARABIC
+            changeLanguage(requireContext(),ARABIC_LANGUAGE)
             viewModel.isButtonClickedFunction(ARABIC_LANGUAGE)
             val action = SplashFragmentDirections.actionSplashFragmentToHomeFragment()
             Navigation.findNavController(view).navigate(action)
         }
 
         binding.englishBtn.setOnClickListener {
+            changeLanguage(requireContext(),ENGLISH_LANGUAGE)
             //   SetLang ENGLISH_LANGUAGE
             viewModel.isButtonClickedFunction(ENGLISH_LANGUAGE)
             val action = SplashFragmentDirections.actionSplashFragmentToHomeFragment()

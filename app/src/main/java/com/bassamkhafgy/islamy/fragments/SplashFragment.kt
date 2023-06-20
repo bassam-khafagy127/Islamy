@@ -16,7 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.bassamkhafgy.islamy.R
 import com.bassamkhafgy.islamy.databinding.FragmentSplashBinding
 import com.bassamkhafgy.islamy.utill.Constants
-import com.bassamkhafgy.islamy.utill.Constants.LANGUAGE_NAVIGATION.HOME_FRAGMENT
+import com.bassamkhafgy.islamy.utill.Constants.LANGUAGENAVIGATION.HOME_FRAGMENT
 import com.bassamkhafgy.islamy.utill.Constants.Language.ARABIC_LANGUAGE
 import com.bassamkhafgy.islamy.utill.Constants.Language.ENGLISH_LANGUAGE
 import com.bassamkhafgy.islamy.utill.changeLanguage

@@ -3,9 +3,9 @@ package com.bassamkhafgy.islamy.viewmodel
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bassamkhafgy.islamy.utill.Constants.LANGUAGE_NAVIGATION.HOME_FRAGMENT
-import com.bassamkhafgy.islamy.utill.Constants.LANGUAGE_NAVIGATION.IS_FIRST_LAUNCH_BUTTON_CLICKED
-import com.bassamkhafgy.islamy.utill.Constants.LANGUAGE_NAVIGATION.WHICH_LANGUAGE_BUTTON
+import com.bassamkhafgy.islamy.utill.Constants.LANGUAGENAVIGATION.HOME_FRAGMENT
+import com.bassamkhafgy.islamy.utill.Constants.LANGUAGENAVIGATION.IS_FIRST_LAUNCH_BUTTON_CLICKED
+import com.bassamkhafgy.islamy.utill.Constants.LANGUAGENAVIGATION.WHICH_LANGUAGE_BUTTON
 import com.bassamkhafgy.islamy.utill.Constants.Language.ARABIC_LANGUAGE
 import com.bassamkhafgy.islamy.utill.Constants.Language.ENGLISH_LANGUAGE
 import dagger.hilt.android.lifecycle.HiltViewModel

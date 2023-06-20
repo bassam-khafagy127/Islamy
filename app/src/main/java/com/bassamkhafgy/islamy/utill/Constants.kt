@@ -27,8 +27,9 @@ object Constants {
 
     }
 
+    const val STORED_ADDRESS = "ADDRESS_STORED"
 
-    object LANGUAGE_NAVIGATION {
+    object LANGUAGENAVIGATION {
         const val LANGUAGE_SHARED_PREFERENCE = "LANGUAGE_SHARED_PREFERENCE"
 
 

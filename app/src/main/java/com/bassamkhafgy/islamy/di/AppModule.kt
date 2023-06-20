@@ -6,7 +6,7 @@ import com.bassamkhafgy.islamy.data.database.IslamyAppDataBase
 import com.bassamkhafgy.islamy.networking.TimeApiService
 import com.bassamkhafgy.islamy.repository.HomeRepository
 import com.bassamkhafgy.islamy.repository.SearchRepository
-import com.bassamkhafgy.islamy.utill.Constants.LANGUAGE_NAVIGATION.LANGUAGE_SHARED_PREFERENCE
+import com.bassamkhafgy.islamy.utill.Constants.LANGUAGENAVIGATION.LANGUAGE_SHARED_PREFERENCE
 
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices

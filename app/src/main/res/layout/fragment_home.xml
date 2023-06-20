@@ -204,7 +204,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="0.5"
                             android:gravity="center"
-                            android:text="@{viewModel.prayingTimingsFlow.fajr}"
+                            android:text="@{viewModel.prayingTimingsFlow.data.fajr}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -247,7 +247,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="0.5"
                             android:gravity="center"
-                            android:text="@{viewModel.prayingTimingsFlow.sunrise}"
+                            android:text="@{viewModel.prayingTimingsFlow.data.sunrise}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -290,7 +290,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="0.5"
                             android:gravity="center"
-                            android:text="@{viewModel.prayingTimingsFlow.dhuhr}"
+                            android:text="@{viewModel.prayingTimingsFlow.data.dhuhr}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -333,7 +333,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="0.5"
                             android:gravity="center"
-                            android:text="@{viewModel.prayingTimingsFlow.asr}"
+                            android:text="@{viewModel.prayingTimingsFlow.data.asr}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -376,7 +376,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="0.5"
                             android:gravity="center"
-                            android:text="@{viewModel.prayingTimingsFlow.maghrib}"
+                            android:text="@{viewModel.prayingTimingsFlow.data.maghrib}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -419,7 +419,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="0.5"
                             android:gravity="center"
-                            android:text="@{viewModel.prayingTimingsFlow.isha}"
+                            android:text="@{viewModel.prayingTimingsFlow.data.isha}"
                             android:textColor="@color/g_blueDark"
                             android:textSize="18sp"
                             android:textStyle="bold" />

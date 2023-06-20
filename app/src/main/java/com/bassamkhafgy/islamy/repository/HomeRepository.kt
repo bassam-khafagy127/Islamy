@@ -41,7 +41,7 @@ class HomeRepository @Inject constructor(
         day: String,
         latitude: String,
         longitude: String,
-    ): PrayerSchedule {
+    ): Resource<PrayerSchedule> {
         val timings = timeApiService.getPrayerTimes(day, latitude, longitude)
         val prayerTimesResponse = timings.body()?.data?.timings
 
@@ -57,13 +57,10 @@ class HomeRepository @Inject constructor(
             dropOldData()
             //insert to local database
             insertUpdateDayTimings(currentTimings)
-            return currentTimings
+            return Resource.Success(currentTimings)
 
         } else {
-            //getDataBaseData
-            currentTimings = getCachedTimings()
-
-            return currentTimings
+            return Resource.Error(timings.errorBody().toString())
         }
     }
 
@@ -72,7 +69,7 @@ class HomeRepository @Inject constructor(
         day: String,
         latitude: String,
         longitude: String,
-    ): PrayerSchedule {
+    ): Resource<PrayerSchedule> {
         val timings = timeApiService.getPrayerTimes(day, latitude, longitude)
         val prayerTimesResponse = timings.body()?.data?.timings
 
@@ -84,7 +81,7 @@ class HomeRepository @Inject constructor(
             currentTimings.maghrib = getTime12hrsFormat(prayerTimesResponse?.maghrib.toString())
             currentTimings.isha = getTime12hrsFormat(prayerTimesResponse?.isha.toString())
         }
-        return currentTimings
+        return Resource.Success(currentTimings)
     }
 
     //getAddress
@@ -109,8 +106,8 @@ class HomeRepository @Inject constructor(
     }
 
     //getDataFromDataBase
-    fun getCachedTimings(): PrayerSchedule {
-        return timingsDataBase.timingsDao().getDayTimings()
+    fun getCachedTimings(): Resource<PrayerSchedule> {
+        return Resource.Success(timingsDataBase.timingsDao().getDayTimings())
     }
 
 

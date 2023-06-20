@@ -20,22 +20,13 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val repository: HomeRepository) : ViewModel() {
 
-    private val currentTimings =
-        Timings(
-            "", " ",
-            "", "",
-            "", "",
-            "", "",
-            "", "",
-            ""
-        )
-
     private val _flowLocationData: MutableStateFlow<Resource<Location>> =
         MutableStateFlow(Resource.Unspecified())
     val flowLocationData: StateFlow<Resource<Location>> = _flowLocationData
 
-    private val _prayingTimingsFlow: MutableStateFlow<Timings> = MutableStateFlow(currentTimings)
-    val prayingTimingsFlow: StateFlow<Timings> = _prayingTimingsFlow
+    private val _prayingTimingsFlow: MutableStateFlow<Resource<PrayerSchedule>> =
+        MutableStateFlow(Resource.Unspecified())
+    val prayingTimingsFlow: StateFlow<Resource<PrayerSchedule>> = _prayingTimingsFlow
 
     private val _liveAddressFlow: MutableStateFlow<String> = MutableStateFlow("")
     val liveAddressFlow: StateFlow<String> = _liveAddressFlow
@@ -62,21 +53,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             val timingsResponse = repository.getRemoteTimings(day, latitude, longitude)
-            _prayingTimingsFlow.emit(
-                Timings(
-                    timingsResponse.asr,
-                    timingsResponse.dhuhr,
-                    timingsResponse.fajr,
-                    "",
-                    "",
-                    timingsResponse.isha,
-                    "",
-                    timingsResponse.maghrib,
-                    "",
-                    timingsResponse.sunrise,
-                    ""
-                )
-            )
+            _prayingTimingsFlow.emit(timingsResponse)
         }
     }
 
@@ -88,21 +65,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             val timingsResponse = repository.getNextAndLastDayTimings(day, latitude, longitude)
-            _prayingTimingsFlow.emit(
-                Timings(
-                    timingsResponse.asr,
-                    timingsResponse.dhuhr,
-                    timingsResponse.fajr,
-                    "",
-                    "",
-                    timingsResponse.isha,
-                    "",
-                    timingsResponse.maghrib,
-                    "",
-                    timingsResponse.sunrise,
-                    ""
-                )
-            )
+            _prayingTimingsFlow.emit(timingsResponse)
         }
     }
 
@@ -124,21 +87,7 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     fun getCachedTimings() {
         viewModelScope.launch(Dispatchers.IO) {
             val timingsCached = repository.getCachedTimings()
-            _prayingTimingsFlow.emit(
-                Timings(
-                    timingsCached.asr,
-                    timingsCached.dhuhr,
-                    timingsCached.fajr,
-                    "",
-                    "",
-                    timingsCached.isha,
-                    "",
-                    timingsCached.maghrib,
-                    "",
-                    timingsCached.sunrise,
-                    ""
-                )
-            )
+            _prayingTimingsFlow.emit(timingsCached)
         }
     }
 

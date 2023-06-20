@@ -1,6 +1,7 @@
 package com.bassamkhafgy.islamy.fragments
 
 import android.Manifest
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -19,6 +20,7 @@ import com.bassamkhafgy.islamy.data.local.PrayerTime
 import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
+import com.bassamkhafgy.islamy.utill.Constants.STORED_ADDRESS
 import com.bassamkhafgy.islamy.utill.Resource
 import com.bassamkhafgy.islamy.utill.convertDateFormat
 import com.bassamkhafgy.islamy.utill.getDayCounter
@@ -33,20 +35,21 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var binding: FragmentHomeBinding
     private val viewModel by viewModels<HomeViewModel>()
 
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
     //UserCurrentLocation
     private val currentLocation = Location("")
 
     //UserCurrentAddress
     private var currentAddress = ""
-
-    //CurrentPrayingTimings
-    private val currentTimings = Timings("", "", "", "", "", "", "", "", "", "", "")
 
     private var dayCounter = 0
 
@@ -81,13 +84,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 isInterNetNotConnectedTimings()
             }
         }
+
+        lifecycleScope.launch {
+            viewModel.liveAddressFlow.collect {
+                currentAddress = it
+            }
+        }
     }
 
     private suspend fun isInterNetConnectedTimings() {
         viewModel.flowLocationData.collect { locationState ->
-//            currentLocation.latitude = it!!.latitude
-//            currentLocation.altitude = it.altitude
-//            currentLocation.longitude = it.longitude
             when (locationState) {
                 is Resource.Error -> {
                     Toast.makeText(requireContext(), "${locationState.message}", Toast.LENGTH_LONG)
@@ -99,22 +105,27 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
 
                 is Resource.Success -> {
+                    //ForQiblaCompass
+                    currentLocation.latitude = locationState.data!!.latitude
+                    currentLocation.altitude = locationState.data.altitude
+                    currentLocation.longitude = locationState.data.longitude
                     //getAddress
                     viewModel.getUserAddress(
-                        locationState.data?.latitude.toString(),
-                        locationState.data?.longitude.toString()
+                        locationState.data.latitude.toString(),
+                        locationState.data.longitude.toString()
                     )
 
                     //getRemoteTimings
                     lifecycleScope.launch {
                         viewModel.getRemoteTimings(
                             viewModel.getTimeForApi(),
-                            locationState.data?.latitude.toString(),
-                            locationState.data?.longitude.toString()
+                            locationState.data.latitude.toString(),
+                            locationState.data.longitude.toString()
                         )
                     }
                     //getNextPrayName
                     nextPrayTitle()
+
                 }
 
                 is Resource.Unspecified -> {
@@ -134,18 +145,54 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     //getNextPray
     private suspend fun nextPrayTitle() {
-        delay(600)
-        viewModel.prayingTimingsFlow.collect {
-            val prayerTimes = listOf(
-                PrayerTime(resources.getString(R.string.fagrTime), "${it.fajr}"),
-                PrayerTime(resources.getString(R.string.shroukTime), "${it.sunrise}"),
-                PrayerTime(resources.getString(R.string.zohrTime), "${it.dhuhr}"),
-                PrayerTime(resources.getString(R.string.asrTime), "${it.asr}"),
-                PrayerTime(resources.getString(R.string.magrbeTime), "${it.maghrib}"),
-                PrayerTime(resources.getString(R.string.isha_time), "${it.isha}"),
-            )
-            viewModel.getNextPrayer(prayerTimes)
+        viewModel.prayingTimingsFlow.collect { timingsState ->
+            when (timingsState) {
+                is Resource.Error -> {
+                    Log.e(Constants.ERROR_TAG + "nextPrayTitle", "Error")
+                }
+
+                is Resource.Loading -> {
+                    Log.e(Constants.ERROR_TAG + "nextPrayTitle", "Loading")
+                }
+
+                is Resource.Success -> {
+                    viewModel.prayingTimingsFlow.collect {
+                        val prayerTimes = listOf(
+                            PrayerTime(
+                                resources.getString(R.string.fagrTime),
+                                timingsState.data!!.fajr
+                            ),
+                            PrayerTime(
+                                resources.getString(R.string.shroukTime),
+                                timingsState.data.sunrise
+                            ),
+                            PrayerTime(
+                                resources.getString(R.string.zohrTime),
+                                timingsState.data.dhuhr
+                            ),
+                            PrayerTime(
+                                resources.getString(R.string.asrTime),
+                                timingsState.data.asr
+                            ),
+                            PrayerTime(
+                                resources.getString(R.string.magrbeTime),
+                                timingsState.data.maghrib
+                            ),
+                            PrayerTime(
+                                resources.getString(R.string.isha_time),
+                                timingsState.data.isha
+                            ),
+                        )
+                        viewModel.getNextPrayer(prayerTimes)
+                    }
+                }
+
+                is Resource.Unspecified -> {
+                    Log.e(Constants.ERROR_TAG + "nextPrayTitle", "Unspecified")
+                }
+            }
         }
+
     }
 
     private fun checkPermission() {
@@ -217,4 +264,5 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             Toast.LENGTH_LONG
         ).show()
     }
+
 }

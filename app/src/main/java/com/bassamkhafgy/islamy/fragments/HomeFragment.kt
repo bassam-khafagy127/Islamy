@@ -85,9 +85,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         }
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             viewModel.liveAddressFlow.collect {
                 currentAddress = it
+                delay(2000)
+                viewModel.updateAddress(currentAddress)
             }
         }
     }
@@ -139,6 +141,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private suspend fun isInterNetNotConnectedTimings() {
         //getLocalTimingsFromDataBase
         viewModel.getCachedTimings()
+
         //getNextPrayName
         nextPrayTitle()
     }

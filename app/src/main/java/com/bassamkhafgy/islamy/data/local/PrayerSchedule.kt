@@ -13,4 +13,5 @@ data class PrayerSchedule(
     var asr: String,
     var maghrib: String,
     var isha: String,
+    var address: String?
 )

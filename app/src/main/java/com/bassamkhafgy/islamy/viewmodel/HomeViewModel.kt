@@ -91,6 +91,12 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         }
     }
 
+    fun updateAddress(newAddress: String) {
+        repository.updateAddress(newAddress)
+    }
+
+
+
     //getNextPrayer Title
     fun getNextPrayer(prayers: List<PrayerTime>) {
         viewModelScope.launch {

@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,30 +17,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.bassamkhafgy.islamy.R
 import com.bassamkhafgy.islamy.data.local.PrayerTime
-import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
-import com.bassamkhafgy.islamy.utill.Constants.STORED_ADDRESS
 import com.bassamkhafgy.islamy.utill.Resource
 import com.bassamkhafgy.islamy.utill.calculateElapsedTimeCountDown
 import com.bassamkhafgy.islamy.utill.convertDateFormat
-import com.bassamkhafgy.islamy.utill.getCurrentTime
 import com.bassamkhafgy.islamy.utill.getDayCounter
-import com.bassamkhafgy.islamy.utill.getNextAzanTitle
 import com.bassamkhafgy.islamy.utill.getSystemDate
 import com.bassamkhafgy.islamy.utill.isInternetConnected
 import com.bassamkhafgy.islamy.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint

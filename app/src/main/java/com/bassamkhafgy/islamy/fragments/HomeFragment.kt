@@ -23,6 +23,7 @@ import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
 import com.bassamkhafgy.islamy.utill.Constants.STORED_ADDRESS
 import com.bassamkhafgy.islamy.utill.Resource
+import com.bassamkhafgy.islamy.utill.calculateElapsedTimeCountDown
 import com.bassamkhafgy.islamy.utill.convertDateFormat
 import com.bassamkhafgy.islamy.utill.getCurrentTime
 import com.bassamkhafgy.islamy.utill.getDayCounter
@@ -185,7 +186,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                 timingsState.data.isha
                             ),
                         )
-                        calculateElapsedTimeCountDown(viewModel.getNextPrayer(prayerTimes).time)
+                       countDown(viewModel.getNextPrayer(prayerTimes).time)
                     }
                 }
 
@@ -197,25 +198,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     }
 
-    private fun calculateElapsedTimeCountDown(timeString: String) {
-        val dateFormat = SimpleDateFormat("hh:mm a", Locale.ENGLISH)
-        val targetTime = dateFormat.parse(timeString)
-        val currentTime = dateFormat.parse(getCurrentTime())
-
-        val durationMillis = currentTime!!.time - targetTime!!.time
-
-        val hours = TimeUnit.MILLISECONDS.toHours(durationMillis)
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis) % 60
-
-        val elapsedMillis = TimeUnit.HOURS.toMillis(hours) + TimeUnit.MINUTES.toMillis(minutes)
-        val baseTime = SystemClock.elapsedRealtime() - elapsedMillis
-
+    private fun countDown(timeString: String) {
+        val baseTime = calculateElapsedTimeCountDown(timeString)
         binding.nextPrayerTimeChronometer.apply {
             base = baseTime
             format = "%s"
             start()
         }
     }
+
 
     private fun checkPermission() {
         if (ActivityCompat.checkSelfPermission(

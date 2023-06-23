@@ -1,10 +1,12 @@
 package com.bassamkhafgy.islamy.utill
 
+import android.os.SystemClock
 import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 
 fun getSystemDate(): String {
@@ -52,6 +54,20 @@ fun getCurrentTime(): String {
     val timeFormat = SimpleDateFormat("hh:mm a", Locale.ENGLISH)
     val currentTime = Calendar.getInstance().time
     return timeFormat.format(currentTime)
+}
+
+fun calculateElapsedTimeCountDown(timeString: String): Long {
+    val dateFormat = SimpleDateFormat("hh:mm a", Locale.ENGLISH)
+    val targetTime = dateFormat.parse(timeString)
+    val currentTime = dateFormat.parse(getCurrentTime())
+
+    val durationMillis = currentTime!!.time - targetTime!!.time
+
+    val hours = TimeUnit.MILLISECONDS.toHours(durationMillis)
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis) % 60
+
+    val elapsedMillis = TimeUnit.HOURS.toMillis(hours) + TimeUnit.MINUTES.toMillis(minutes)
+    return SystemClock.elapsedRealtime() - elapsedMillis
 }
 
 

@@ -35,7 +35,7 @@ class HomeRepository @Inject constructor(
         return getLocationLatitudeLongitude(fusedLocationProviderClient)
     }
 
-    private var currentTimings = PrayerSchedule(0, "", "", "", "", "", "", null)
+    private var currentTimings = PrayerSchedule(0, "", "", "", "", "", "")
 
     suspend fun getRemoteTimings(
         day: String,
@@ -114,10 +114,6 @@ class HomeRepository @Inject constructor(
     //getNextPrayer Title
     fun getNextPrayer(prayers: List<PrayerTime>): PrayerTime {
         return getNextAzanTitle(prayers)
-    }
-
-    fun updateAddress(newAddress: String) {
-        timingsDataBase.timingsDao().updateAddress(newAddress)
     }
 
 }

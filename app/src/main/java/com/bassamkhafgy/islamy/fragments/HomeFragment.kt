@@ -91,6 +91,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 isInterNetNotConnectedTimings()
             }
         }
+        lifecycleScope.launch {
+            viewModel.liveAddressFlow.collect {
+                currentAddress = it
+            }
+        }
 
     }
 
@@ -186,7 +191,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                 timingsState.data.isha
                             ),
                         )
-                       countDown(viewModel.getNextPrayer(prayerTimes).time)
+                        countDown(viewModel.getNextPrayer(prayerTimes).time)
                     }
                 }
 

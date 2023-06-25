@@ -61,13 +61,30 @@ fun calculateElapsedTimeCountDown(timeString: String): Long {
     val targetTime = dateFormat.parse(timeString)
     val currentTime = dateFormat.parse(getCurrentTime())
 
-    val durationMillis = currentTime!!.time - targetTime!!.time
+    val currentTimeCalendar = Calendar.getInstance()
+    val targetTimeCalendar = Calendar.getInstance()
+
+    // Set the current time
+    currentTimeCalendar.time = currentTime
+
+    // Set the target time
+    targetTimeCalendar.time = targetTime
+    targetTimeCalendar.set(Calendar.YEAR, currentTimeCalendar.get(Calendar.YEAR))
+    targetTimeCalendar.set(Calendar.MONTH, currentTimeCalendar.get(Calendar.MONTH))
+    targetTimeCalendar.set(Calendar.DAY_OF_MONTH, currentTimeCalendar.get(Calendar.DAY_OF_MONTH))
+
+    // Check if the target time is before the current time, indicating it's for the next day
+    if (targetTimeCalendar.before(currentTimeCalendar)) {
+        targetTimeCalendar.add(Calendar.DAY_OF_MONTH, 1) // Increment the day by 1
+    }
+
+    val durationMillis = targetTimeCalendar.timeInMillis - currentTimeCalendar.timeInMillis
 
     val hours = TimeUnit.MILLISECONDS.toHours(durationMillis)
     val minutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis) % 60
 
     val elapsedMillis = TimeUnit.HOURS.toMillis(hours) + TimeUnit.MINUTES.toMillis(minutes)
-    return SystemClock.elapsedRealtime() - elapsedMillis
+    return SystemClock.elapsedRealtime() + elapsedMillis
 }
 
 

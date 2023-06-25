@@ -65,10 +65,14 @@ fun calculateElapsedTimeCountDown(timeString: String): Long {
     val targetTimeCalendar = Calendar.getInstance()
 
     // Set the current time
-    currentTimeCalendar.time = currentTime
+    if (currentTime != null) {
+        currentTimeCalendar.time = currentTime
+    }
 
     // Set the target time
-    targetTimeCalendar.time = targetTime
+    if (targetTime != null) {
+        targetTimeCalendar.time = targetTime
+    }
     targetTimeCalendar.set(Calendar.YEAR, currentTimeCalendar.get(Calendar.YEAR))
     targetTimeCalendar.set(Calendar.MONTH, currentTimeCalendar.get(Calendar.MONTH))
     targetTimeCalendar.set(Calendar.DAY_OF_MONTH, currentTimeCalendar.get(Calendar.DAY_OF_MONTH))

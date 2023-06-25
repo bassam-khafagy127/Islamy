@@ -22,7 +22,7 @@ object Constants {
 
     object DATABASE {
         const val PRAYER_TABLE_NAME = "PRAYER TIMES"
-        const val LOCATION_TABLE_NAME = "LAST LOCATION"
+        const val ADDRESS_TABLE_NAME = "ADDRESS LOCATION"
         const val TIMINGS_DATABASE_NAME = "PRAYER TIMES DATABASE"
 
     }

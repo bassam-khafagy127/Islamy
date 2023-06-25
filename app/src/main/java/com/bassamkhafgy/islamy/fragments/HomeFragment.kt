@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.bassamkhafgy.islamy.R
 import com.bassamkhafgy.islamy.data.local.PrayerTime
+import com.bassamkhafgy.islamy.data.local.StoringAddress
 import com.bassamkhafgy.islamy.databinding.FragmentHomeBinding
 import com.bassamkhafgy.islamy.utill.Constants
 import com.bassamkhafgy.islamy.utill.Resource
@@ -27,6 +28,8 @@ import com.bassamkhafgy.islamy.utill.getSystemDate
 import com.bassamkhafgy.islamy.utill.isInternetConnected
 import com.bassamkhafgy.islamy.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -116,6 +119,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                             locationState.data.longitude.toString()
                         )
                     }
+
+                    lifecycleScope.launch {
+                        delay(1000)
+                        viewModel.insertAddress(
+                            StoringAddress(
+                                0,
+                                currentAddress,
+                                locationState.data.latitude.toString(),
+                                locationState.data.longitude.toString()
+                            )
+                        )
+                    }
+
                     //getNextPrayName
                     nextPrayTitle()
 
@@ -130,17 +146,53 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private suspend fun isInterNetNotConnectedTimings() {
-        //getLocalTimingsFromDataBase
-        viewModel.getCachedTimings()
 
-        //getNextPrayName
-        nextPrayTitle()
+        lifecycleScope.launch(Dispatchers.IO) {
+
+            //getLocalTimingsFromDataBase
+            viewModel.getCachedTimings()
+
+            //getAddressAndLocation
+            viewModel.getAddressFromDataBase()
+
+            //getNextPrayName
+            nextPrayTitle()
+
+        }
+
+        //collecting location lat long
+        viewModel.flowLocationData.collect { locationState ->
+            when (locationState) {
+
+                is Resource.Error -> Log.e(
+                    Constants.ERROR_TAG + "ADDRESS_GEOCODER", "Error"
+                )
+
+                is Resource.Loading -> Log.d(
+                    Constants.ERROR_TAG + "ADDRESS_GEOCODER", "Loading"
+                )
+
+                is Resource.Success -> {
+                    //ForQiblaCompass
+                    currentLocation.latitude = locationState.data!!.latitude
+                    currentLocation.altitude = locationState.data.altitude
+                    currentLocation.longitude = locationState.data.longitude
+                }
+
+                is Resource.Unspecified -> Log.d(
+                    Constants.ERROR_TAG + "ADDRESS_GEOCODER", "Unspecified"
+                )
+
+            }
+
+        }
     }
 
     //getNextPray
     private suspend fun nextPrayTitle() {
         viewModel.prayingTimingsFlow.collect { timingsState ->
             when (timingsState) {
+
                 is Resource.Error -> {
                     Log.e(Constants.ERROR_TAG + "nextPrayTitle", "Error")
                 }
@@ -177,13 +229,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                 timingsState.data.isha
                             ),
                         )
+                        //next pray countdown
                         countDown(viewModel.getNextPrayer(prayerTimes).time)
+
                     }
                 }
 
                 is Resource.Unspecified -> {
                     Log.e(Constants.ERROR_TAG + "nextPrayTitle", "Unspecified")
                 }
+
             }
         }
 
@@ -191,11 +246,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun countDown(timeString: String) {
         val baseTime = calculateElapsedTimeCountDown(timeString)
+
         binding.nextPrayerTimeChronometer.apply {
             base = baseTime
             format = "%s"
             start()
         }
+
     }
 
 

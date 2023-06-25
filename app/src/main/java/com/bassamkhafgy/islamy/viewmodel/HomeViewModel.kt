@@ -1,10 +1,12 @@
 package com.bassamkhafgy.islamy.viewmodel
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bassamkhafgy.islamy.data.local.PrayerSchedule
 import com.bassamkhafgy.islamy.data.local.PrayerTime
+import com.bassamkhafgy.islamy.data.local.StoringAddress
 import com.bassamkhafgy.islamy.data.remote.Timings
 import com.bassamkhafgy.islamy.repository.HomeRepository
 import com.bassamkhafgy.islamy.utill.Resource
@@ -69,6 +71,14 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         }
     }
 
+    //getFromDataBase
+    fun getCachedTimings() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val timingsCached = repository.getCachedTimings()
+            _prayingTimingsFlow.emit(timingsCached)
+        }
+    }
+
     //getTimeWithApiFormat
     fun getTimeForApi(): String {
         return repository.getTimeForApiFormat()
@@ -83,13 +93,6 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         return address
     }
 
-    //getFromDataBase
-    fun getCachedTimings() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val timingsCached = repository.getCachedTimings()
-            _prayingTimingsFlow.emit(timingsCached)
-        }
-    }
 
     //getNextPrayer Title
     fun getNextPrayer(prayers: List<PrayerTime>): PrayerTime {
@@ -97,6 +100,22 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
             _nextPrayerTitle.emit(repository.getNextPrayer(prayers))
         }
         return repository.getNextPrayer(prayers)
+    }
+
+    //insert Address to dataBase
+    suspend fun insertAddress(address: StoringAddress) {
+        repository.dropOldAddressData()
+        repository.insertAddress(address)
+    }
+
+    //get Address from dataBase
+    suspend fun getAddressFromDataBase() {
+        val dbLocation = repository.getCachedAddress()
+        val location = Location("")
+        location.latitude = dbLocation.latitude.toDouble()
+        location.longitude = dbLocation.longitude.toDouble()
+        _flowLocationData.emit(Resource.Success(location))
+        _liveAddressFlow.emit(dbLocation.address)
     }
 
 }

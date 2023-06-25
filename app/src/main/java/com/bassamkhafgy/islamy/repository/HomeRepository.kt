@@ -5,6 +5,7 @@ import android.location.Location
 import com.bassamkhafgy.islamy.data.database.IslamyAppDataBase
 import com.bassamkhafgy.islamy.data.local.PrayerSchedule
 import com.bassamkhafgy.islamy.data.local.PrayerTime
+import com.bassamkhafgy.islamy.data.local.StoringAddress
 import com.bassamkhafgy.islamy.data.remote.TimeResponse
 import com.bassamkhafgy.islamy.networking.TimeApiService
 import com.bassamkhafgy.islamy.utill.Resource
@@ -95,6 +96,22 @@ class HomeRepository @Inject constructor(
     }
 
 
+    //insert Address to dataBase
+     suspend fun insertAddress(address: StoringAddress) {
+        timingsDataBase.addressDao().insertAddress(address)
+    }
+
+    //update address
+     suspend fun dropOldAddressData() {
+        timingsDataBase.addressDao().deleteOldData()
+    }
+
+    //getCachedAddress from DataBase
+    fun getCachedAddress(): StoringAddress {
+        return timingsDataBase.addressDao().getAddress()
+    }
+
+
     //insert Today Timings to dataBase
     private suspend fun insertUpdateDayTimings(timings: PrayerSchedule) {
         timingsDataBase.timingsDao().insertTimings(timings)
@@ -109,7 +126,6 @@ class HomeRepository @Inject constructor(
     fun getCachedTimings(): Resource<PrayerSchedule> {
         return Resource.Success(timingsDataBase.timingsDao().getDayTimings())
     }
-
 
     //getNextPrayer Title
     fun getNextPrayer(prayers: List<PrayerTime>): PrayerTime {

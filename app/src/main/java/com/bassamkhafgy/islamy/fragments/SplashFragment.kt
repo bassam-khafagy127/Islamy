@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.bassamkhafgy.islamy.R
+import com.bassamkhafgy.islamy.activities.MainActivity
 import com.bassamkhafgy.islamy.databinding.FragmentSplashBinding
 import com.bassamkhafgy.islamy.utill.Constants
 import com.bassamkhafgy.islamy.utill.Constants.LANGUAGENAVIGATION.HOME_FRAGMENT
@@ -50,7 +51,7 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
             viewModel.navigation.collect {
                 when (it) {
                     HOME_FRAGMENT -> {
-                        findNavController().navigate(it)
+                       startMainActivity()
                     }
                 }
             }
@@ -64,18 +65,18 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
 
         binding.arabicBtn.setOnClickListener {
             //   SetLang ARABIC
-            changeLanguage(requireContext(),ARABIC_LANGUAGE)
+            changeLanguage(requireContext(), ARABIC_LANGUAGE)
             viewModel.isButtonClickedFunction(ARABIC_LANGUAGE)
-            val action = SplashFragmentDirections.actionSplashFragmentToHomeFragment()
-            Navigation.findNavController(view).navigate(action)
+
+            startMainActivity()
         }
 
         binding.englishBtn.setOnClickListener {
-            changeLanguage(requireContext(),ENGLISH_LANGUAGE)
+            changeLanguage(requireContext(), ENGLISH_LANGUAGE)
             //   SetLang ENGLISH_LANGUAGE
             viewModel.isButtonClickedFunction(ENGLISH_LANGUAGE)
-            val action = SplashFragmentDirections.actionSplashFragmentToHomeFragment()
-            Navigation.findNavController(view).navigate(action)
+
+            startMainActivity()
         }
 
     }
@@ -95,5 +96,13 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
                 Constants.Location.LOCATION_PERMISSION_CODE
             )
         }
+    }
+
+    private fun startMainActivity() {
+        val intent = Intent(requireActivity(), MainActivity::class.java).also { intent ->
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        startActivity(intent)
     }
 }

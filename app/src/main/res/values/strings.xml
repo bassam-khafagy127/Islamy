@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Islamy</string>
     <string name="start">Start</string>
-    <string name="arabic">Arabic</string>
+    <string name="arabic">عربي</string>
     <string name="english">English</string>
     <string name="nextPrayerTV">Next\nPrayer</string>
     <string name="_1_20_nminutes">1:20\nMinutes</string>

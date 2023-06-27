@@ -40,6 +40,6 @@ object Constants {
             "WHICH_LANGUAGE_BUTTON"
 
 
-        val HOME_FRAGMENT = R.id.action_splashFragment_to_homeFragment
+        val HOME_FRAGMENT = R.layout.fragment_home
     }
 }

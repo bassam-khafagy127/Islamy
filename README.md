@@ -1,2 +1,2 @@
 # Islamy
-#->1-1-Only the next prayer and the remaining time is not finish
+App is Completed Please message me if there any suggestions or issues
